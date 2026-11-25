@@ -1,0 +1,2452 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Antrian Service Motor Listrik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--red:#D5101C;--ink:#16181B;--mut:#6B7077;--line:#E2E4E7;--bg:#F4F5F6;--card:#fff;--ok:#1C8A4C;--warn:#C77700;--blue:#1F5FBF}
+@media(prefers-color-scheme:dark){:root{--ink:#EEF0F2;--mut:#9AA0A8;--line:#33373C;--bg:#0F1113;--card:#1A1D20}}
+*{box-sizing:border-box}html,body{margin:0}
+body{font:15px/1.45 Barlow,system-ui,sans-serif;background:var(--bg);color:var(--ink);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+
+header{background:#16181B;color:#fff;display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 20px;border-bottom:4px solid var(--red)}
+header h1{font:700 22px 'Barlow Condensed',sans-serif;margin:0;letter-spacing:.3px;display:flex;align-items:center;gap:8px}
+
+.site-badge{background:#25292E;border:1px solid #3C424B;color:#fff;padding:5px 12px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background 0.2s}
+.site-badge:hover{background:#30363D;border-color:var(--red)}
+.site-badge b{color:#FFB3B8}
+
+nav{display:flex;gap:4px;align-items:center}
+nav button{background:none;border:0;color:#C9CDD2;font:600 14px Barlow;padding:7px 12px;border-radius:6px;cursor:pointer;transition:all 0.15s}
+nav button:hover{background:#2a2d31;color:#fff}
+nav button.on{background:var(--red);color:#fff}
+.btn-logout{background:#2e1517;color:#FFB3B8;border:1px solid #632226;font-size:12.5px;padding:5px 10px;border-radius:6px;cursor:pointer;font-weight:600}
+.btn-logout:hover{background:var(--red);color:#fff}
+.btn-sync{background:#25292E;border:1px solid #3C424B;color:#C9CDD2;font:600 12.5px Barlow,sans-serif;padding:5px 10px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all 0.15s}
+.btn-sync:hover{background:#30363D;color:#fff;border-color:var(--red)}
+.btn-sync.spinning #syncIcon{display:inline-block;animation:spin 0.8s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+main{max-width:1100px;margin:0 auto;padding:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+h2{font:700 20px 'Barlow Condensed',sans-serif;margin:0 0 12px;text-transform:uppercase;letter-spacing:.3px}
+label{display:block;font-weight:500;font-size:13px;color:var(--mut);margin-bottom:10px}
+input,select,textarea{display:block;width:100%;margin-top:4px;padding:9px 10px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.btn{background:var(--red);color:#fff;border:0;border-radius:6px;padding:10px 18px;font:600 14px Barlow;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn.sec{background:none;color:var(--ink);border:1px solid var(--line)}
+.btn.sec:hover{background:var(--line)}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn.ok{background:var(--ok)}.btn.bl{background:var(--blue)}.btn.warn{background:#D97706;color:#fff}.btn.warn:hover{filter:brightness(1.08)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.kpi b{display:block;font:700 32px/1.1 'Barlow Condensed';}.kpi span{font-size:13px;color:var(--mut)}
+.kpi.hot b{color:var(--red)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12.5px;color:var(--mut);font-weight:600}
+.scroll{overflow-x:auto}
+.no{font:700 22px 'Barlow Condensed';color:var(--red)}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12.5px;font-weight:600;background:var(--line)}
+.s-Booking{background:#E8EAED;color:#444}
+.s-Hadir,.s-Ambil-Antrian{background:#FFF1D6;color:var(--warn)}
+.s-Dikerjakan,.s-Create-SCL{background:#DCE9FB;color:var(--blue)}
+.s-Selesai,.s-Invoice{background:#DDF2E5;color:var(--ok)}
+.s-FBB{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A}
+.s-Batal{background:#EEE;color:#888;text-decoration:line-through}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--red)}
+.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.day{border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:13px}
+.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.row>*{flex:1;min-width:140px}.row .btn{flex:0 0 auto}
+.big{text-align:center;padding:26px}.big .no{font-size:64px}
+.note{font-size:13px;color:var(--mut)}
+.clk{font:700 18px 'Barlow Condensed';font-variant-numeric:tabular-nums;color:#fff;background:#2a2d31;padding:3px 10px;border-radius:6px}
+.live{font-variant-numeric:tabular-nums;font-weight:600}
+.hide{display:none !important}
+
+/* Modal Styling */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(3px);padding:16px}
+.modal-card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:24px;width:100%;max-width:380px;box-shadow:0 12px 36px rgba(0,0,0,0.4)}
+.modal-card h3{margin:0 0 8px;font:700 22px 'Barlow Condensed';text-transform:uppercase}
+.modal-err{background:#FCE8E6;color:#C5221F;padding:8px 12px;border-radius:4px;font-size:13px;font-weight:600;margin:10px 0}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(0);background:#1C8A4C;color:#fff;padding:8px 1mm;border-radius:4px;font:600 13.5px/1.4 Barlow,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:99999;opacity:1;transition:all 0.25s ease;display:flex;align-items:center;justify-content:center;gap:6px;width:max-content;max-width:calc(100vw - 16px);box-sizing:border-box;text-align:center}
+.toast.hide{opacity:0;transform:translateX(-50%) translateY(-12px);pointer-events:none}
+.toast-icon{flex-shrink:0;font-size:15px;line-height:1}
+.toast-msg{white-space:normal;word-break:break-word;overflow-wrap:break-word}
+
+@media(max-width:768px){.g2{grid-template-columns:1fr}nav{margin-left:0;width:100%;justify-content:space-between}header{gap:10px}}
+
+/* Selalu sembunyikan Menu Utama dan Sinkron di Halaman Antrian */
+#btnNavHome, .btn-sync {
+  display: none !important;
+}
+</style></head><body>
+
+<div id="toast" class="toast hide"></div>
+
+<header>
+  <h1>
+    <span>Antrian Motor Listrik</span>
+    <div class="site-badge" style="cursor:default;" title="Cabang Bengkel: BDG (Paten)">Cabang: <b id="siteBadgeTxt">BDG</b></div>
+  </h1>
+  <nav id="nav">
+    <button data-v="antrian" id="btnNavAntrian" class="on" style="background:var(--red);color:#fff">🎫 Ambil Antrian</button>
+    <button data-v="book" id="btnNavBook" onclick="location.href='booking.html'">📅 Booking Service</button>
+  </nav>
+  <div style="display:flex;align-items:center;gap:10px;margin-left:auto">
+    
+    <span class="clk" id="clk"></span>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<!-- MODAL LOGIN PIN & SITE -->
+<div id="modalLogin" class="modal-overlay hide">
+  <div class="modal-card">
+    <h3 id="modalTitle">Login Petugas</h3>
+    <p class="note" id="modalDesc">Masukkan password untuk membuka hak akses.</p>
+    <label id="lblLoginSite">Pilih Site / Cabang:
+      <select id="loginSiteSel" onchange="onLoginSiteChange(this.value)"></select>
+    </label>
+    <label>PIN / Password:
+      <input type="password" id="loginPin" placeholder="Masukkan PIN / Password" maxlength="20" onkeydown="if(event.key==='Enter')submitLogin()">
+    </label>
+    <div id="loginErr" class="modal-err hide">PIN salah! Silakan coba lagi.</div>
+    <div class="modal-actions">
+      <button class="btn sec" onclick="closeLoginModal()">Batal</button>
+      <button class="btn" onclick="submitLogin()">Masuk</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SWITCH SITE -->
+<div id="modalSite" class="modal-overlay hide" style="display:none !important;">
+  <div class="modal-card">
+    <h3>Pilih Site / Cabang Aktif</h3>
+    <p class="note">Pilih lokasi cabang untuk melihat antrian dan kuota servis:</p>
+    <label>Daftar Cabang:
+      <select id="switchSiteSel"></select>
+    </label>
+    <div class="modal-actions">
+      <button class="btn sec" onclick="closeSiteModal()">Batal</button>
+      <button class="btn" onclick="confirmSwitchSite()">Terapkan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL KONFIRMASI BOOKING -->
+<div id="modalConfirmBooking" class="modal-overlay hide" onclick="if(event.target===this)closeConfirmBookingModal()">
+  <div class="modal-card" style="max-width:440px">
+    <h3>Konfirmasi Booking Service</h3>
+    <p class="note" style="margin-bottom:12px">Mohon periksa kembali detail booking Anda sebelum disimpan:</p>
+    <div id="confirmBookingBody" style="background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:12px;font-size:13.5px;line-height:1.6;margin-bottom:14px"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn sec" style="border-radius:4px" onclick="closeConfirmBookingModal()">Batal / Ubah</button>
+      <button type="button" class="btn" id="btnDoConfirmBooking" style="border-radius:4px" onclick="executeConfirmedBooking()">Ya, Konfirmasi Booking</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL KONFIRMASI AMBIL ANTRIAN (08:30 - 11:30) -->
+<div id="modalConfirmAntrian" class="modal-overlay hide" onclick="if(event.target===this)closeConfirmAntrianModal()">
+  <div class="modal-card" style="max-width:440px">
+    <h3>Konfirmasi Ambil Antrian</h3>
+    <p class="note" style="margin-bottom:12px">Mohon periksa kembali detail kendaraan Anda sebelum mengambil nomor antrian:</p>
+    <div id="confirmAntrianBody" style="background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:12px;font-size:13.5px;line-height:1.6;margin-bottom:14px"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn sec" style="border-radius:4px" onclick="closeConfirmAntrianModal()">Batal / Ubah</button>
+      <button type="button" class="btn ok" id="btnDoConfirmAntrian" style="border-radius:4px" onclick="executeConfirmedAntrian()">Ya, Ambil Nomor Antrian</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL KONFIRMASI PENGATURAN STALL -->
+<div id="modalConfirmStalls" class="modal-overlay hide" onclick="if(event.target===this)closeConfirmStallsModal()">
+  <div class="modal-card" style="max-width:440px">
+    <h3>Konfirmasi Pengaturan Stall</h3>
+    <p class="note" style="margin-bottom:12px">Mohon periksa kembali perubahan kapasitas stall cabang:</p>
+    <div id="confirmStallsBody" style="background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:12px;font-size:13.5px;line-height:1.6;margin-bottom:14px"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn sec" style="border-radius:4px" onclick="closeConfirmStallsModal()">Batal</button>
+      <button type="button" class="btn" id="btnDoConfirmStalls" style="border-radius:4px" onclick="executeConfirmedStalls()">Ya, Simpan Perubahan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOTIFIKASI / INFORMASI (POPUP PENGGANTI ALERT) -->
+<div id="modalAlert" class="modal-overlay hide" onclick="if(event.target===this)closeAlertModal()">
+  <div class="modal-card" style="max-width:400px;text-align:center">
+    <div id="modalAlertIcon" style="font-size:38px;line-height:1;margin-bottom:10px">⚠️</div>
+    <h3 id="modalAlertTitle" style="margin-bottom:8px">Pemberitahuan</h3>
+    <div id="modalAlertMsg" style="font-size:13.5px;color:var(--ink);line-height:1.55;margin-bottom:18px;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:12px 14px;text-align:center"></div>
+    <div class="modal-actions" style="justify-content:center;margin-top:0">
+      <button type="button" class="btn" style="min-width:120px;padding:10px 24px;border-radius:4px" onclick="closeAlertModal()">Oke, Mengerti</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Penjaga error global untuk callback JSONP asinkronus yang datang terlambat
+window.addEventListener("error", function(e) {
+  if (e && e.message && (e.message.includes("sq_cb_") || e.message.includes("sq_tx_") || e.message.includes("sq_test_")) && e.message.includes("not defined")) {
+    if (e.preventDefault) e.preventDefault();
+    return true;
+  }
+});
+
+/* ===== KONFIGURASI (HANYA LINK & PIN) ===== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzJ0mOVPtf1moT3VY0zOmjZzlnw27QPFj030FfkOi0vPane6FZTGDG0DL1o3IsMsb_Low/exec";
+const PIN = { sa: "1234", adm: "4321" };
+const ANTRIAN_SLOTS = ["08:30", "09:30", "10:30"]; // 3 slot antrian per stall (08:30 - 11:30)
+const BOOKING_SLOTS = ["12:30", "13:30", "14:30"]; // 3 slot booking per stall (12:30 - 15:30)
+const BOOKING_DURATION_MINS = 60; // 1 jam per unit
+const LAYANAN = ["Service rutin", "Express (di bawah 30 menit)", "Garansi", "Cek baterai / kelistrikan", "Penggantian sparepart", "Lainnya"];
+
+/* ===== HELPER WAKTU & KALKULASI ===== */
+function addMinutes(hmStr, minsToAdd) {
+  if (!hmStr) return "";
+  const parts = hmStr.split(":");
+  let totalMins = parseInt(parts[0], 10) * 60 + parseInt(parts[1] || 0, 10) + minsToAdd;
+  const h = Math.floor(totalMins / 60) % 24;
+  const m = totalMins % 60;
+  return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+}
+
+function currentHM() {
+  const d = new Date();
+  return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+}
+
+function isAntrianHours() {
+  const d = new Date();
+  const curMins = d.getHours() * 60 + d.getMinutes();
+  return (curMins >= 8 * 60 + 30 && curMins <= 11 * 60 + 30);
+}
+
+/* ===== HELPER STORAGE & UTIL ===== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const ld = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch(e) { return d; } };
+const sv = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} };
+
+/* Pemetaan Label Status & Tahapan Proses */
+function statusLabel(s) {
+  if (s === "Hadir" || s === "Ambil Antrian") return "Ambil Antrian";
+  if (s === "Dikerjakan" || s === "Create SCL") return "Create SCL";
+  if (s === "Selesai" || s === "Invoice") return "Invoice";
+  if (s === "FBB") return "FBB (Belum Diambil)";
+  return s || "";
+}
+function statusClass(s) {
+  if (s === "FBB") return "s-FBB";
+  const lbl = statusLabel(s);
+  return "s-" + (lbl || "Booking").replace(/\s+/g, "-");
+}
+
+/* ===== POPUP NOTIFIKASI MODAL CUSTOM (PENGGANTI ALERT NATIVE) ===== */
+let alertResolve = null;
+function showAlert(msg, title = "Pemberitahuan", icon = "⚠️") {
+  return new Promise(resolve => {
+    alertResolve = resolve;
+    const modal = $("#modalAlert");
+    const titleEl = $("#modalAlertTitle");
+    const msgEl = $("#modalAlertMsg");
+    const iconEl = $("#modalAlertIcon");
+    if (!modal) return resolve();
+    if (titleEl) titleEl.textContent = title;
+    if (msgEl) msgEl.innerHTML = esc(msg).replace(/\n/g, "<br>");
+    if (iconEl) iconEl.textContent = icon;
+    modal.classList.remove("hide");
+  });
+}
+
+function closeAlertModal() {
+  const modal = $("#modalAlert");
+  if (modal) modal.classList.add("hide");
+  if (alertResolve) {
+    const res = alertResolve;
+    alertResolve = null;
+    res();
+  }
+}
+
+window.alert = function(msg) {
+  showAlert(msg);
+};
+
+function getFormObj(containerId) {
+  const root = typeof containerId === "string" ? $("#" + containerId) : containerId;
+  const res = {};
+  if (root) {
+    root.querySelectorAll("input, select, textarea").forEach(el => {
+      const k = el.name || el.id;
+      if (k) res[k] = el;
+    });
+  }
+  return res;
+}
+
+/* Daftar Site (Paten BDG) */
+const DEFAULT_SITE = "BDG";
+let sites = ["BDG"];
+let sitePins = ld("sq_site_pins", {});
+let siteStalls = ld("sq_site_stalls", {});
+let activeSite = "BDG";
+sv("sq_active_site", "BDG");
+
+let recs = ld("sq_recs", []);
+let cfg = Object.assign({ stalls: 2, quota: 6, perDate: {}, url: SCRIPT_URL, siteQuotas: {} }, ld("sq_cfg", {}));
+if (cfg.url !== SCRIPT_URL) {
+  cfg.url = SCRIPT_URL;
+  sv("sq_cfg", cfg);
+}
+const urlParams = new URLSearchParams(window.location.search);
+const pView = urlParams.get("v") || urlParams.get("view");
+let view = (pView === "book") ? "book" : "antrian";
+let role = ld("sq_role", {}), saDate = today(), admDate = today(), done = null, doneAntrian = null;
+
+function switchView(v) {
+  view = v;
+  done = null;
+  doneAntrian = null;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+let pendingRoleTarget = null;
+
+function today() {
+  const d = new Date();
+  return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+}
+
+function tomorrow() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+}
+
+const url = () => SCRIPT_URL || cfg.url;
+
+/* Site Stall & Kapasitas Helpers: 1 Stall = 6 unit/hari (3 Booking + 3 Walk-in) */
+function siteStallsOf(d, s = activeSite) {
+  const siteKey = (s || "").toUpperCase();
+  const sq = cfg.siteQuotas && cfg.siteQuotas[siteKey] ? cfg.siteQuotas[siteKey] : null;
+
+  // 1. Cek tanggal khusus jika ada override khusus tanggal di admin
+  if (sq && sq.perDate && sq.perDate[d] != null) return Math.max(1, sq.perDate[d]);
+
+  // 2. Prioritaskan konfigurasi stall cabang yang disimpan admin
+  if (sq && sq.stalls != null && !isNaN(parseInt(sq.stalls, 10))) {
+    return Math.max(1, parseInt(sq.stalls, 10));
+  }
+
+  // 3. Baca dari Kolom C sheet SITE jika tersedia
+  if (siteStalls && siteStalls[siteKey] != null) {
+    const sVal = parseInt(siteStalls[siteKey], 10);
+    if (!isNaN(sVal) && sVal > 0) return sVal;
+  }
+
+  // 4. Fallback ke konfigurasi kuota atau default (2 stall)
+  if (sq && sq.quota != null) return Math.max(1, Math.round(sq.quota / 3));
+  return Math.max(1, cfg.stalls || 2);
+}
+
+function siteBookingQuotaOf(d, s = activeSite) {
+  return siteStallsOf(d, s) * 3; // 1 stall = 3 booking (12:30, 13:30, 14:30)
+}
+
+function siteWalkinQuotaOf(d, s = activeSite) {
+  return siteStallsOf(d, s) * 3; // 1 stall = 3 walk-in
+}
+
+function siteTotalCapacityOf(d, s = activeSite) {
+  return siteStallsOf(d, s) * 6; // 1 stall = 6 unit total
+}
+
+function siteQuotaOf(d, s = activeSite) {
+  return siteBookingQuotaOf(d, s);
+}
+
+function siteUsed(d, s = activeSite) {
+  return recs.filter(r => (r.site || "").toUpperCase() === (s || "").toUpperCase() && r.tanggal === d && r.sumber === "Booking" && r.status !== "Batal").length;
+}
+
+function siteAntrianUsed(d, s = activeSite) {
+  return recs.filter(r => (r.site || "").toUpperCase() === (s || "").toUpperCase() && r.tanggal === d && r.sumber !== "Booking" && r.status !== "Batal").length;
+}
+
+function getStallList(d, s = activeSite) {
+  const count = siteStallsOf(d, s);
+  return Array.from({ length: count }, (_, i) => "Stall " + (i + 1));
+}
+
+function getAvailableStallsForSlot(d, slotTime, s = activeSite) {
+  const allStalls = getStallList(d, s);
+  const bookedStalls = recs.filter(r => 
+    (r.site || "").toUpperCase() === (s || "").toUpperCase() && 
+    r.tanggal === d && 
+    r.sumber === "Booking" && 
+    r.jam === slotTime && 
+    r.status !== "Batal"
+  ).map(r => r.stall);
+
+  return allStalls.filter(st => !bookedStalls.includes(st));
+}
+
+function getAvailableStallsForAntrianSlot(d, slotTime, s = activeSite) {
+  const allStalls = getStallList(d, s);
+  const usedStalls = recs.filter(r => 
+    (r.site || "").toUpperCase() === (s || "").toUpperCase() && 
+    r.tanggal === d && 
+    r.sumber !== "Booking" && 
+    r.jam === slotTime && 
+    r.status !== "Batal"
+  ).map(r => r.stall);
+
+  return allStalls.filter(st => !usedStalls.includes(st));
+}
+
+const now = () => new Date().toISOString();
+const fmtD = d => new Date(d + "T00:00").toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" });
+const hm = t => t ? new Date(t).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "-";
+const mins = (a, b) => a ? Math.max(0, Math.round(((b ? new Date(b) : new Date()) - new Date(a)) / 1e3)) : null;
+const p2 = n => String(n).padStart(2, "0");
+const dur = s => s == null ? "-" : (s >= 3600 ? Math.floor(s / 3600) + ":" : "") + p2(Math.floor(s % 3600 / 60)) + ":" + p2(s % 60);
+const lv = (a, b) => !a ? "-" : b ? dur(mins(a, b)) : `<span class="live" data-a="${a}">${dur(mins(a))}</span>`;
+const mask = p => { p = String(p || ""); return p.length > 5 ? p.slice(0, 3) + "***" + p.slice(-2) : p; };
+
+/* Kalkulasi Status Operasional Antrian Langsung (08:30 - 11:30) */
+function getAntrianOperationalStatus() {
+  const d = new Date();
+  const curMins = d.getHours() * 60 + d.getMinutes();
+  const openMins = 8 * 60 + 30;   // 08:30 = 510
+  const closeMins = 11 * 60 + 30; // 11:30 = 690
+
+  const quota = siteWalkinQuotaOf(today(), activeSite);
+  const used = recs.filter(r => 
+    (r.site || "").toUpperCase() === activeSite.toUpperCase() &&
+    r.tanggal === today() &&
+    r.sumber !== "Booking" &&
+    r.status !== "Batal"
+  ).length;
+
+  const isBetweenHours = (curMins >= openMins && curMins <= closeMins);
+
+  let statusType = "open";
+  let statusText = "Buka (08:30 - 11:30 WIB)";
+  let badgeColor = "#1C8A4C";
+
+  if (curMins < openMins) {
+    statusType = "before";
+    statusText = "Belum Buka (Pukul 08:30 WIB)";
+    badgeColor = "#B06000";
+  } else if (curMins > closeMins) {
+    statusType = "after";
+    statusText = "Tutup (Buka 08:30 - 11:30 WIB)";
+    badgeColor = "#D5101C";
+  } else if (used >= quota) {
+    statusType = "full";
+    statusText = "Kuota Antrian Penuh";
+    badgeColor = "#D5101C";
+  }
+
+  return {
+    isOpen: isBetweenHours && (used < quota),
+    isBetweenHours,
+    statusType,
+    statusText,
+    badgeColor,
+    quota,
+    used,
+    sisa: Math.max(0, quota - used)
+  };
+}
+
+/* Kalkulasi Estimasi Waktu Tunggu Antrian Langsung (08:30 - 11:30)
+   CATATAN: Sesuai ketentuan, HANYA menghitung durasi pengerjaan unit antrian, unit booking TIDAK dihitung! */
+function calcAntrianWaitEstimate(r) {
+  const t = today();
+  const s = (r && r.site ? r.site : activeSite).toUpperCase();
+  const curTime = currentHM();
+  const totalStalls = Math.max(1, siteStallsOf(t, s));
+  
+  // 1. Ambil unit Antrian (Walk-in) yang SEDANG DIKERJAKAN di stall hari ini (Booking TIDAK dihitung)
+  const activeAntrianRecs = recs.filter(x => 
+    (x.site || "").toUpperCase() === s &&
+    x.tanggal === t &&
+    x.sumber !== "Booking" &&
+    (x.status === "Dikerjakan" || x.status === "Create SCL")
+  );
+
+  // Inisialisasi waktu ketersediaan tiap stall (dalam menit dari sekarang)
+  const stallAvailability = [];
+  for (let i = 1; i <= totalStalls; i++) {
+    const stallName = "Stall " + i;
+    const active = activeAntrianRecs.find(x => x.stall === stallName);
+    if (active) {
+      const elapsedMins = mins(active.mulai) ? Math.floor(mins(active.mulai) / 60) : 0;
+      const remMins = Math.max(0, 60 - elapsedMins);
+      stallAvailability.push({ stall: stallName, freeInMins: remMins, activeUnit: active });
+    } else {
+      stallAvailability.push({ stall: stallName, freeInMins: 0, activeUnit: null });
+    }
+  }
+
+  // 2. Ambil unit Antrian (Walk-in) yang SEDANG MENUNGGU di depan unit ini (Booking TIDAK dihitung)
+  const waitingAntrianAhead = recs.filter(x => 
+    (x.site || "").toUpperCase() === s &&
+    x.tanggal === t &&
+    x.sumber !== "Booking" &&
+    (x.status === "Hadir" || x.status === "Ambil Antrian") &&
+    (!r || !r.no_antrian || r.no_antrian === "ZZZ" || x.no_antrian < r.no_antrian)
+  );
+
+  // Simulasikan alokasi antrian di depan ke stall yang selesai lebih awal (60 menit per unit)
+  const simStalls = stallAvailability.map(st => st.freeInMins);
+  for (let i = 0; i < waitingAntrianAhead.length; i++) {
+    let minIdx = 0;
+    for (let j = 1; j < simStalls.length; j++) {
+      if (simStalls[j] < simStalls[minIdx]) minIdx = j;
+    }
+    simStalls[minIdx] += 60;
+  }
+
+  // Waktu tunggu untuk unit ini adalah stall yang paling cepat tersedia
+  let bestIdx = 0;
+  for (let j = 1; j < simStalls.length; j++) {
+    if (simStalls[j] < simStalls[bestIdx]) bestIdx = j;
+  }
+
+  const waitMinutes = simStalls[bestIdx];
+  const targetStall = stallAvailability[bestIdx].stall;
+  const estStart = addMinutes(curTime, waitMinutes);
+  const estDone = addMinutes(estStart, 60);
+
+  return {
+    waitMinutes,
+    waitingAheadCount: waitingAntrianAhead.length,
+    targetStall,
+    estStart,
+    estDone,
+    totalStalls,
+    activeCount: activeAntrianRecs.length
+  };
+}
+
+/* ===== SISTEM DATA LATAR BELAKANG ===== */
+let outbox = ld("sq_out", []), busy = false;
+
+function post(o) {
+  o.site = o.site || activeSite;
+  if (o.action === "upsert") {
+    outbox = outbox.filter(x => !(x.action === "upsert" && x.record.id === o.record.id));
+  }
+  if (o.action === "settings") {
+    outbox = outbox.filter(x => !(x.action === "settings" && x.site === o.site));
+  }
+  outbox.push(o);
+  sv("sq_out", outbox);
+  flush();
+}
+
+function sendItem(o) {
+  return new Promise((resolve, reject) => {
+    if (!url()) return reject(new Error("URL belum disetel"));
+    const cbName = "sq_tx_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
+    const params = new URLSearchParams();
+    params.set("callback", cbName);
+    params.set("action", o.action || "");
+    if (o.site) params.set("site", o.site);
+    if (o.action === "settings") {
+      params.set("settings", typeof o.settings === "string" ? o.settings : JSON.stringify(o.settings));
+    } else if (o.action === "upsert") {
+      params.set("record", typeof o.record === "string" ? o.record : JSON.stringify(o.record));
+    }
+    params.set("t", Date.now().toString());
+
+    const sep = url().includes("?") ? "&" : "?";
+    const script = document.createElement("script");
+    script.src = url() + sep + params.toString();
+    script.async = true;
+
+    let done = false;
+    const cleanup = () => {
+      // Jangan langsung delete ke undefined agar jika respon datang terlambat tidak memicu ReferenceError
+      window[cbName] = function() { delete window[cbName]; };
+      setTimeout(() => { delete window[cbName]; }, 45000);
+      if (script.parentNode) script.parentNode.removeChild(script);
+    };
+
+    window[cbName] = function(resp) {
+      if (done) return;
+      done = true;
+      cleanup();
+      if (resp && resp.ok) resolve(resp);
+      else reject(new Error(resp?.error || "Gagal simpan"));
+    };
+
+    script.onerror = function() {
+      if (done) return;
+      done = true;
+      cleanup();
+      reject(new Error("Network / script error"));
+    };
+
+    setTimeout(() => {
+      if (done) return;
+      done = true;
+      cleanup();
+      reject(new Error("Timeout simpan (Google Apps Script lambat merespons)"));
+    }, 15000);
+
+    document.head.appendChild(script);
+  });
+}
+
+async function flush() {
+  if (!url() || busy || !outbox.length) return;
+  busy = true;
+  setSyncStatus("loading");
+  while (outbox.length) {
+    const o = outbox[0];
+    let ok = false;
+    try {
+      await sendItem(o);
+      ok = true;
+    } catch(err) {
+      // Fallback ke POST fetch jika terjadi error di JSONP
+      try {
+        const resp = await fetch(url(), {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(o)
+        });
+        const j = await resp.json();
+        if (j && j.ok) ok = true;
+      } catch(_) {
+        try {
+          await fetch(url(), {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify(o)
+          });
+          ok = true;
+        } catch(__) {}
+      }
+    }
+
+    if (ok) {
+      outbox.shift();
+      sv("sq_out", outbox);
+    } else {
+      break;
+    }
+  }
+  busy = false;
+  setSyncStatus("done", outbox.length ? "Offline" : "Tersinkron");
+}
+
+function saveRec(r) {
+  r.site = (r.site || activeSite || "").toUpperCase();
+  r.upd = now();
+  if (!r.jam) r.jam = hm(r.dibuat || now());
+  const i = recs.findIndex(x => x.id === r.id);
+  i < 0 ? recs.push(r) : recs[i] = r;
+  sv("sq_recs", recs);
+  post({ action: "upsert", site: r.site, record: r });
+}
+
+function saveCfg() {
+  sv("sq_cfg", cfg);
+  const k = activeSite.toUpperCase();
+  const sNum = (cfg.siteQuotas && cfg.siteQuotas[k] && cfg.siteQuotas[k].stalls)
+    ? cfg.siteQuotas[k].stalls
+    : siteStallsOf(today());
+  post({
+    action: "settings",
+    site: activeSite,
+    settings: {
+      stalls: sNum,
+      quota: siteBookingQuotaOf(today()),
+      perDate: cfg.siteQuotas?.[k]?.perDate || {}
+    }
+  });
+}
+
+function applyServerData(j) {
+  if (!j || !j.ok) return;
+
+  // Memuat daftar cabang dari server
+  if (j.sites && Array.isArray(j.sites) && j.sites.length > 0) {
+    sites = j.sites;
+    sv("sq_sites", sites);
+    activeSite = "BDG";
+    sv("sq_active_site", "BDG");
+    updateSiteBadges();
+
+    const sAntrian = $("#antrianSiteSel");
+    if (sAntrian) {
+      const cur = sAntrian.value || activeSite;
+      sAntrian.innerHTML = sites.map(s => `<option value="${s}" ${s.toUpperCase() === cur.toUpperCase() ? "selected" : ""}>Cabang ${s}</option>`).join("");
+    }
+    const sBook = $("#bookSiteSel");
+    if (sBook) {
+      const cur = sBook.value || activeSite;
+      sBook.innerHTML = sites.map(s => `<option value="${s}" ${s.toUpperCase() === cur.toUpperCase() ? "selected" : ""}>Cabang ${s}</option>`).join("");
+    }
+    const tagA = $("#antrianSiteTag");
+    if (tagA) tagA.textContent = activeSite;
+    const tagB = $("#bookSiteTag");
+    if (tagB) tagB.textContent = activeSite;
+  }
+
+  // Memuat password Service Advisor per cabang
+  if (j.sitePins && typeof j.sitePins === "object") {
+    sitePins = j.sitePins;
+    sv("sq_site_pins", sitePins);
+  }
+
+  // Memuat jumlah stall per cabang (dari Kolom C sheet SITE)
+  if (j.siteStalls && typeof j.siteStalls === "object") {
+    siteStalls = j.siteStalls;
+    sv("sq_site_stalls", siteStalls);
+  }
+
+  // Sinkronisasi data antrian dari server (sumber data utama)
+  const serverRecs = (j.records || []).map(r => {
+    r.site = (r.site || activeSite || "").toUpperCase();
+    return r;
+  });
+
+  // Ambil ID antrian lokal yang masih ada di outbox belum terkirim (agar data offline tidak hilang)
+  const pendingOutboxIds = new Set(
+    outbox.filter(o => o.action === "upsert" && o.record && o.record.id).map(o => o.record.id)
+  );
+
+  // Pertahankan antrian cabang lain yang tersimpan lokal
+  const otherSiteRecs = recs.filter(r => (r.site || "").toUpperCase() !== activeSite.toUpperCase());
+
+  // Untuk cabang aktif: gunakan data server terbaru
+  const activeMap = new Map(serverRecs.map(r => [r.id, r]));
+  
+  // Jika ada record lokal cabang aktif yang masih menunggu terkirim di outbox, pertahankan
+  recs.forEach(r => {
+    if ((r.site || "").toUpperCase() === activeSite.toUpperCase() && pendingOutboxIds.has(r.id)) {
+      activeMap.set(r.id, r);
+    }
+  });
+
+  recs = [...otherSiteRecs, ...activeMap.values()];
+  sv("sq_recs", recs);
+
+  // Sinkronisasi stall dan kuota
+  if (j.settings) {
+    if (!cfg.siteQuotas) cfg.siteQuotas = {};
+    const k = activeSite.toUpperCase();
+    if (!cfg.siteQuotas[k]) cfg.siteQuotas[k] = {};
+    if (j.settings.stalls != null) cfg.siteQuotas[k].stalls = j.settings.stalls;
+    if (j.settings.quota != null) cfg.siteQuotas[k].quota = j.settings.quota;
+    if (j.settings.perDate) cfg.siteQuotas[k].perDate = j.settings.perDate;
+    sv("sq_cfg", cfg);
+  }
+
+  render();
+  flush();
+}
+
+function setSyncStatus(st, msg) {
+  const btn = $(".btn-sync");
+  const lbl = $("#syncLabel");
+  if (!btn || !lbl) return;
+  if (st === "loading") {
+    btn.classList.add("spinning");
+    lbl.textContent = "Sinkron...";
+  } else if (st === "done") {
+    btn.classList.remove("spinning");
+    lbl.textContent = msg || "Tersinkron";
+    setTimeout(() => { if (lbl) lbl.textContent = "Sinkron"; }, 2500);
+  } else if (st === "err") {
+    btn.classList.remove("spinning");
+    lbl.textContent = msg || "Gagal";
+    setTimeout(() => { if (lbl) lbl.textContent = "Sinkron"; }, 2500);
+  }
+}
+
+let isPulling = false;
+function pull(manual = false) {
+  if (!url()) return;
+  if (isPulling) return;
+  isPulling = true;
+  setSyncStatus("loading");
+
+  // Gunakan JSONP via script tag dinamis agar bebas dari hambatan CORS browser lokal (file:///)
+  const cbName = "sq_cb_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
+  const qUrl = url() + (url().includes("?") ? "&" : "?") + 
+               "callback=" + cbName + 
+               (activeSite ? "&site=" + encodeURIComponent(activeSite) : "") + 
+               "&t=" + Date.now();
+
+  const script = document.createElement("script");
+  script.src = qUrl;
+  script.async = true;
+
+  let loaded = false;
+
+  const cleanup = () => {
+    isPulling = false;
+    // PENTING: Jangan langsung hapus ke undefined! Ganti dengan fungsi aman (stub)
+    // selama 45 detik agar jika Google Apps Script merespons terlambat,
+    // browser TIDAK AKAN melempar error 'sq_cb_... is not defined'!
+    window[cbName] = function(lateData) {
+      if (lateData) {
+        try { applyServerData(lateData); } catch(e) {}
+      }
+      delete window[cbName];
+    };
+    setTimeout(() => { delete window[cbName]; }, 45000);
+    if (script.parentNode) script.parentNode.removeChild(script);
+  };
+
+  window[cbName] = function(j) {
+    if (loaded) return;
+    loaded = true;
+    try {
+      applyServerData(j);
+      setSyncStatus("done", "Tersinkron");
+    } catch(e) {
+      console.error("Gagal terapkan data:", e);
+      setSyncStatus("err", "Error Data");
+    } finally {
+      cleanup();
+    }
+  };
+
+  script.onerror = function() {
+    if (!loaded) {
+      setSyncStatus("err", "Gagal Jaringan");
+    }
+    cleanup();
+  };
+
+  // Timeout 15 detik (waktu aman untuk Google Apps Script cold-start & load data)
+  setTimeout(() => {
+    if (!loaded) {
+      cleanup();
+      setSyncStatus("err", "Koneksi Lambat");
+    }
+  }, 15000);
+
+  document.head.appendChild(script);
+}
+
+function testConn() {
+  const su = $("#su");
+  const u = su ? su.value.trim() : "";
+  if (u) { cfg.url = u; sv("sq_cfg", cfg); }
+  
+  const cbName = "sq_test_" + Date.now();
+  const qUrl = url() + (url().includes("?") ? "&" : "?") + "callback=" + cbName + (activeSite ? "&site=" + encodeURIComponent(activeSite) : "") + "&t=" + Date.now();
+  
+  const script = document.createElement("script");
+  script.src = qUrl;
+  script.async = true;
+  
+  let doneTest = false;
+  const cleanupTest = () => {
+    window[cbName] = function() { delete window[cbName]; };
+    setTimeout(() => { delete window[cbName]; }, 45000);
+    if (script.parentNode) script.parentNode.removeChild(script);
+  };
+  window[cbName] = function(j) {
+    if (doneTest) return;
+    doneTest = true;
+    cleanupTest();
+    showAlert(j && j.ok 
+      ? `Koneksi berhasil terhubung!\nCabang Terbaca: ${j.sites ? j.sites.join(', ') : '-'}\nTotal Antrian: ${j.records ? j.records.length : 0}`
+      : "Koneksi ditolak: " + (j ? j.error : "Unknown error"), "Status Koneksi", j && j.ok ? "✓" : "⚠️");
+    applyServerData(j);
+  };
+  
+  script.onerror = function() {
+    delete window[cbName];
+    if (script.parentNode) script.parentNode.removeChild(script);
+    if (!doneTest) {
+      fetch(qUrl.replace("&callback=" + cbName, ""))
+        .then(r => r.json())
+        .then(j => {
+          showAlert(`Koneksi berhasil terhubung!\nCabang Terbaca: ${j.sites ? j.sites.join(', ') : '-'}\nTotal Antrian: ${j.records ? j.records.length : 0}`, "Status Koneksi", "✓");
+          applyServerData(j);
+        })
+        .catch(() => {
+          showAlert("Gagal terhubung ke server.\nPeriksa koneksi internet atau alamat endpoint.", "Koneksi Gagal", "⚠️");
+        });
+    }
+  };
+  
+  document.head.appendChild(script);
+}
+
+/* ===== LOGIKA NOMOR ANTRIAN & RECORD ===== */
+function nextNo(d, s = activeSite) {
+  const n = recs.filter(r => (r.site || "").toUpperCase() === (s || "").toUpperCase() && r.tanggal === d).length + 1;
+  return "A" + String(n).padStart(3, "0");
+}
+
+function create(f, d, src, forceIgnoreQuota = false) {
+    const selectedSite = (f.site && f.site.value) ? f.site.value.toUpperCase() : activeSite;
+  activeSite = selectedSite;
+  sv("sq_active_site", activeSite);
+let allocatedStall = "";
+  let bookingTime = "";
+
+  if (src === "Booking") {
+    if (d <= today()) {
+      showAlert("Booking service hanya dapat dilakukan mulai besok (H-1). Untuk hari ini silakan gunakan 'Ambil Antrian'.", "Booking Tidak Tersedia", "⚠️");
+      return null;
+    }
+    bookingTime = f.jam_slot ? f.jam_slot.value : "12:30";
+    const availStalls = getAvailableStallsForSlot(d, bookingTime, activeSite);
+    if (availStalls.length === 0) {
+      showAlert("Maaf, slot booking jam " + bookingTime + " pada tanggal " + fmtD(d) + " sudah penuh terisi. Silakan pilih jam lain.", "Slot Penuh", "🚫");
+      return null;
+    }
+    // Jika ada lebih dari 1 stall yang kosong, pilih otomatis secara acak (random)
+    allocatedStall = availStalls[Math.floor(Math.random() * availStalls.length)];
+  } else {
+    // Ambil Antrian (Walk-in)
+    // Jika BUKAN dari tombol walk-in SA (forceIgnoreQuota = false), periksa kuota slot antrian
+    if (!forceIgnoreQuota) {
+      const antrianQuota = siteWalkinQuotaOf(d, activeSite);
+      const used = siteAntrianUsed(d, activeSite);
+      if (used >= antrianQuota) {
+        showAlert("Maaf, kuota antrian pada tanggal " + fmtD(d) + " sudah penuh (" + antrianQuota + " antrian). Semua slot antrian sudah terisi.", "Antrian Penuh", "🚫");
+        return null;
+      }
+    }
+    bookingTime = hm(now());
+
+    // Alokasi stall walk-in: pilih stall dengan antrian paling sedikit
+    const allStalls = getStallList(d, activeSite);
+    const stallCounts = {};
+    allStalls.forEach(s => stallCounts[s] = 0);
+    recs.filter(r => (r.site || "").toUpperCase() === (activeSite || "").toUpperCase() && r.tanggal === d && r.status !== "Selesai" && r.status !== "Batal" && r.status !== "Invoice")
+        .forEach(r => { if (stallCounts[r.stall] !== undefined) stallCounts[r.stall]++; });
+
+    let bestStalls = [];
+    let minCount = Infinity;
+    allStalls.forEach(s => {
+      if (stallCounts[s] < minCount) {
+        minCount = stallCounts[s];
+        bestStalls = [s];
+      } else if (stallCounts[s] === minCount) {
+        bestStalls.push(s);
+      }
+    });
+    allocatedStall = bestStalls.length > 0 ? bestStalls[Math.floor(Math.random() * bestStalls.length)] : (allStalls[0] || "Stall 1");
+  }
+
+  const r = {
+    id: "Q" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+    site: activeSite,
+    tanggal: d,
+    no_antrian: nextNo(d, activeSite),
+    nama: f.nama ? f.nama.value.trim() : "",
+    hp: f.hp ? f.hp.value.trim() : "",
+    plat: f.plat ? f.plat.value.trim().toUpperCase() : "",
+    model: f.model ? f.model.value.trim() : "",
+    layanan: f.layanan ? f.layanan.value : "Service rutin",
+    keluhan: f.keluhan ? f.keluhan.value.trim() : "",
+    sumber: src,
+    status: src === "Walk-in" ? "Hadir" : "Booking",
+    stall: allocatedStall,
+    checkin: src === "Walk-in" ? now() : "",
+    mulai: "",
+    selesai: "",
+    dibuat: now(),
+    jam: bookingTime
+  };
+  saveRec(r);
+  return r;
+}
+
+function setStatus(id, st, stall) {
+  const r = { ...recs.find(x => x.id === id) };
+  if (!r || !r.id) return;
+  r.status = st;
+  if (st === "Hadir" || st === "Ambil Antrian") r.checkin = now();
+  if (st === "Dikerjakan" || st === "Create SCL") {
+    const targetStall = stall || r.stall;
+    if (!targetStall) {
+      return showAlert("Pilih stall yang tersedia terlebih dahulu.", "Pilih Stall", "⚠️");
+    }
+    // Validasi tabrakan stall: pastikan stall target tidak sedang dipakai oleh unit yang belum di-Invoice
+    const busyUnit = recs.find(x => 
+      x.id !== id && 
+      (x.site || "").toUpperCase() === (r.site || activeSite || "").toUpperCase() &&
+      x.tanggal === (r.tanggal || saDate) &&
+      (x.status === "Dikerjakan" || x.status === "Create SCL") &&
+      x.stall === targetStall
+    );
+    if (busyUnit) {
+      return showAlert(
+        `Tidak dapat memulai Create Case pada ${targetStall}!
+
+${targetStall} saat ini masih digunakan oleh antrian ${busyUnit.no_antrian} (${busyUnit.nama} - ${busyUnit.plat}) dan belum selesai (belum di-Invoice).
+
+Harap selesaikan (Invoice) unit tersebut terlebih dahulu sebelum menggunakan ${targetStall}.`,
+        "Stall Sedang Terisi",
+        "🚫"
+      );
+    }
+    r.mulai = now();
+    r.stall = targetStall;
+    if (!r.checkin) r.checkin = r.mulai;
+  }
+  if (st === "FBB") {
+    if (!r.selesai) r.selesai = now();
+  }
+  if (st === "Selesai" || st === "Invoice") {
+    if (!r.selesai) r.selesai = now();
+  }
+  saveRec(r);
+  render();
+}
+
+/* ===== MODAL & SISTEM LOGIN ROLE / GANTI SITE ===== */
+function openLoginModal(k) {
+  pendingRoleTarget = k;
+  const title = $("#modalTitle");
+  const desc = $("#modalDesc");
+  const pinInput = $("#loginPin");
+  const err = $("#loginErr");
+  const lblSite = $("#lblLoginSite");
+  if (pinInput) pinInput.value = "";
+  if (err) err.classList.add("hide");
+
+  const curSite = (activeSite || (sites[0] || "")).toUpperCase();
+
+  if (k === "sa") {
+    if (title) title.textContent = "Login Service Advisor - BDG";
+    if (desc) desc.textContent = "Masukkan password cabang BDG:";
+    if (lblSite) lblSite.style.display = "none";
+  } else {
+    if (title) title.textContent = "Login Administrator";
+    if (desc) desc.textContent = "Masukkan PIN Administrator:";
+    if (lblSite) lblSite.style.display = "none";
+  }
+
+  const sel = $("#loginSiteSel");
+  if (sel) {
+    sel.innerHTML = sites.map(s => `<option value="${s}" ${s.toUpperCase() === curSite ? "selected" : ""}>${s}</option>`).join("") || '<option value="">(Belum ada cabang)</option>';
+  }
+  const modal = $("#modalLogin");
+  if (modal) modal.classList.remove("hide");
+  setTimeout(() => { if (pinInput) pinInput.focus(); }, 100);
+
+  // Ambil data terbaru jika password belum tersimpan di cache
+  if (!sitePins || Object.keys(sitePins).length === 0) {
+    pull();
+  }
+}
+
+function onLoginSiteChange(val) {
+  if (pendingRoleTarget === "sa") {
+    const s = (val || "").toUpperCase();
+    const title = $("#modalTitle");
+    const desc = $("#modalDesc");
+    if (title) title.textContent = "Login Service Advisor - " + s;
+    if (desc) desc.textContent = "Masukkan password cabang " + s + ":";
+  }
+}
+
+function closeLoginModal() {
+  const modal = $("#modalLogin");
+  if (modal) modal.classList.add("hide");
+  if (view === "sa" && !role.sa) {
+    view = "antrian";
+  } else if (view === "adm" && !role.adm) {
+    view = "antrian";
+  }
+  pendingRoleTarget = null;
+  render();
+}
+
+function switchSiteFromView(newSite) {
+  if (!newSite) return;
+  const s = newSite.toUpperCase();
+  if (s === activeSite.toUpperCase()) return;
+
+  // Hapus izin Service Advisor saat pindah cabang
+  delete role.sa;
+  sv("sq_role", role);
+
+  activeSite = s;
+  sv("sq_active_site", activeSite);
+  updateSiteBadges();
+  pull();
+  render();
+
+  // Minta password cabang baru
+  openLoginModal("sa");
+}
+
+function submitLogin() {
+  const pinEl = $("#loginPin");
+  const siteEl = $("#loginSiteSel");
+  if (!pinEl || !pendingRoleTarget) return;
+
+  const targetRole = pendingRoleTarget;
+  const p = pinEl.value.trim();
+  const selectedSite = "BDG";
+  activeSite = "BDG";
+
+  let expectedPin = "";
+  if (targetRole === "sa") {
+    // Password Service Advisor per cabang (dari Kolom B sheet SITE)
+    expectedPin = (sitePins && sitePins[selectedSite] !== undefined)
+      ? sitePins[selectedSite]
+      : (PIN.sa || "1234");
+  } else {
+    expectedPin = (PIN && PIN.adm) || "4321";
+  }
+
+  if (p === String(expectedPin).trim()) {
+    // Berikan otorisasi role
+    role[targetRole] = 1;
+    sv("sq_role", role);
+
+    if (selectedSite && selectedSite !== activeSite.toUpperCase()) {
+      activeSite = selectedSite;
+      sv("sq_active_site", activeSite);
+      updateSiteBadges();
+      pull();
+    }
+
+    // Langsung masuk ke menu target role
+    view = targetRole;
+    done = null;
+
+    // Tutup popup modal
+    const modal = $("#modalLogin");
+    if (modal) modal.classList.add("hide");
+    pendingRoleTarget = null;
+
+    // Tampilkan menu langsung
+    render();
+  } else {
+    const err = $("#loginErr");
+    if (err) {
+      err.textContent = (targetRole === "sa")
+        ? `Password salah untuk cabang ${selectedSite}! Silakan coba lagi.`
+        : "PIN Administrator salah!";
+      err.classList.remove("hide");
+    }
+    pinEl.select();
+  }
+}
+
+function logoutRole() {
+  role = {};
+  sv("sq_role", role);
+  view = "antrian";
+  render();
+}
+
+function openSiteModal() {
+  // Cabang telah dipatenkan ke BDG
+}
+
+function closeSiteModal() {
+  const modal = $("#modalSite");
+  if (modal) modal.classList.add("hide");
+}
+
+function confirmSwitchSite() {
+  const sel = $("#switchSiteSel");
+  if (sel && sel.value) {
+    const newSite = sel.value.toUpperCase();
+    if (newSite !== activeSite.toUpperCase()) {
+      activeSite = newSite;
+      sv("sq_active_site", activeSite);
+      updateSiteBadges();
+
+      // Hapus izin login Service Advisor saat pindah cabang
+      delete role.sa;
+      sv("sq_role", role);
+
+      closeSiteModal();
+      pull();
+      render();
+
+      // Jika saat ini di halaman SA, langsung minta password cabang baru
+      if (view === "sa") {
+        openLoginModal("sa");
+        return;
+      }
+      return;
+    }
+  }
+  closeSiteModal();
+}
+
+function switchSiteFromForm(newSite) {
+  if (!newSite) return;
+  const s = newSite.toUpperCase();
+  activeSite = s;
+  sv("sq_active_site", activeSite);
+  updateSiteBadges();
+
+  const tagA = $("#antrianSiteTag");
+  if (tagA) tagA.textContent = activeSite;
+  const tagB = $("#bookSiteTag");
+  if (tagB) tagB.textContent = activeSite;
+
+  const fa = $("#fa");
+  if (fa) {
+    const fObj = getFormObj(fa);
+    if (fObj.tgl) antrianSlotInfo(fObj.tgl.value);
+  }
+  const fb = $("#fb");
+  if (fb) {
+    const fObj = getFormObj(fb);
+    if (fObj.tgl) slotInfo(fObj.tgl.value);
+  }
+
+  pull();
+}
+
+function updateSiteBadges() {
+  activeSite = "BDG";
+  const txt = $("#siteBadgeTxt");
+  if (txt) txt.textContent = "BDG";
+  const tagA = $("#antrianSiteTag");
+  if (tagA) tagA.textContent = "BDG";
+  const tagB = $("#bookSiteTag");
+  if (tagB) tagB.textContent = "BDG";
+}
+
+/* ===== MODAL KONFIRMASI BOOKING ===== */
+let pendingBooking = null;
+
+function openConfirmBookingModal(f) {
+  if (!f) f = getFormObj("fb");
+  const d = f.tgl ? f.tgl.value : "";
+  if (!d) return showAlert("Tanggal service wajib dipilih.", "Data Belum Lengkap", "⚠️");
+  if (d <= today()) {
+    return showAlert("Booking service hanya dapat dilakukan mulai besok (H-1). Untuk servis hari ini, silakan gunakan menu 'Ambil Antrian'.", "Booking Tidak Tersedia", "⚠️");
+  }
+  const slot = f.jam_slot ? f.jam_slot.value : "";
+  if (!slot) return showAlert("Pilih jam booking terlebih dahulu.", "Pilih Jam Booking", "⏱️");
+
+  const nama = f.nama ? f.nama.value.trim() : "";
+  const hp = f.hp ? f.hp.value.trim() : "";
+  const plat = f.plat ? f.plat.value.trim().toUpperCase() : "";
+  const model = f.model ? f.model.value.trim() : "";
+  const layanan = f.layanan ? f.layanan.value : "Service rutin";
+  const keluhan = f.keluhan ? f.keluhan.value.trim() : "";
+
+  if (!nama || !hp || !plat || !model) {
+    return showAlert("Mohon lengkapi semua kolom yang wajib diisi (Nama, No. WhatsApp, Plat Nomor, Tipe Motor).", "Data Belum Lengkap", "⚠️");
+  }
+
+  const avail = getAvailableStallsForSlot(d, slot, activeSite);
+  if (avail.length === 0) {
+    return showAlert("Maaf, slot jam " + slot + " pada tanggal " + fmtD(d) + " sudah penuh terisi. Silakan pilih jam lain.", "Slot Penuh", "🚫");
+  }
+
+  pendingBooking = { f, d, slot, nama, hp, plat, model, layanan, keluhan };
+
+  const bodyEl = $("#confirmBookingBody");
+  if (bodyEl) {
+    bodyEl.innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+        <tr><td style="color:var(--muted);width:38%;padding:3px 0">Cabang:</td><td style="font-weight:700">BDG</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Tanggal:</td><td style="font-weight:700;color:var(--pri)">${fmtD(d)}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Jam Booking:</td><td style="font-weight:700;color:var(--pri)">${esc(slot)} - ${addMinutes(slot, 60)} WIB</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Nama Pemilik:</td><td style="font-weight:700">${esc(nama)}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">No. WhatsApp:</td><td>${esc(hp)}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Plat Nomor:</td><td style="font-weight:700;letter-spacing:0.5px">${esc(plat)}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Tipe Motor:</td><td>${esc(model)}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Jenis Layanan:</td><td>${esc(layanan)}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0;vertical-align:top">Keluhan:</td><td style="word-break:break-word">${esc(keluhan || "-")}</td></tr>
+      </table>
+    `;
+  }
+
+  const modal = $("#modalConfirmBooking");
+  if (modal) modal.classList.remove("hide");
+}
+
+function submitBookingClicked() {
+  const f = getFormObj("fb");
+  openConfirmBookingModal(f);
+}
+
+let pendingAntrian = null;
+
+function openConfirmAntrianModal(f) {
+  if (!f) f = getFormObj("fa");
+  const d = f.tgl ? f.tgl.value : "";
+  const nama = f.nama ? f.nama.value.trim() : "";
+  const hp = f.hp ? f.hp.value.trim() : "";
+  const plat = f.plat ? f.plat.value.trim().toUpperCase() : "";
+  const model = f.model ? f.model.value.trim() : "";
+  const layanan = f.layanan ? f.layanan.value : "Service rutin";
+  const keluhan = f.keluhan ? f.keluhan.value.trim() : "";
+
+  if (!d) return showAlert("Tanggal service wajib dipilih.", "Data Belum Lengkap", "⚠️");
+
+  // Validasi Kuota Antrian: jika kuota penuh, tolak pendaftaran antrian
+  const antrianQuota = siteWalkinQuotaOf(d, activeSite);
+  const used = siteAntrianUsed(d, activeSite);
+  if (used >= antrianQuota) {
+    return showAlert("Maaf, kuota antrian pada tanggal " + fmtD(d) + " sudah penuh (" + antrianQuota + " antrian). Semua slot antrian sudah terisi.", "Antrian Penuh", "🚫");
+  }
+
+  if (!nama || !hp || !plat || !model) {
+    return showAlert("Mohon lengkapi semua kolom yang wajib diisi (Nama, No. WhatsApp, Plat Nomor, Tipe Motor).", "Data Belum Lengkap", "⚠️");
+  }
+
+  const est = calcAntrianWaitEstimate({ tanggal: d, site: activeSite, no_antrian: "ZZZ" });
+
+  pendingAntrian = { f, d, nama, hp, plat, model, layanan, keluhan };
+
+  const bodyEl = $("#confirmAntrianBody");
+  if (bodyEl) {
+    bodyEl.innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+        <tr><td style="color:var(--muted);width:38%;padding:3px 0">Cabang:</td><td style="font-weight:700">BDG</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Tanggal:</td><td style="font-weight:700;color:var(--pri)">${fmtD(d)}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Waktu Antri:</td><td style="font-weight:700;color:var(--pri)">${hm(now())} WIB</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Nama Pemilik:</td><td style="font-weight:700">${esc(nama)}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">No. WhatsApp:</td><td>${esc(hp || "-")}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Plat Nomor:</td><td style="font-weight:700;letter-spacing:0.5px">${esc(plat)}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Tipe Motor:</td><td>${esc(model)}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Jenis Layanan:</td><td>${esc(layanan)}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Estimasi Tunggu:</td><td style="font-weight:700;color:var(--red)">⏱️ ${est.waitMinutes <= 0 ? "0 Menit (Langsung Masuk)" : `~${est.waitMinutes} Menit`}</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0;vertical-align:top">Keluhan:</td><td style="word-break:break-word">${esc(keluhan || "-")}</td></tr>
+      </table>
+    `;
+  }
+
+  const modal = $("#modalConfirmAntrian");
+  if (modal) modal.classList.remove("hide");
+}
+
+function submitAntrianClicked() {
+  const f = getFormObj("fa");
+  openConfirmAntrianModal(f);
+}
+
+function closeConfirmAntrianModal() {
+  const modal = $("#modalConfirmAntrian");
+  if (modal) modal.classList.add("hide");
+  pendingAntrian = null;
+}
+
+function executeConfirmedAntrian() {
+  if (!pendingAntrian) return;
+  const p = pendingAntrian;
+  const modal = $("#modalConfirmAntrian");
+  if (modal) modal.classList.add("hide");
+
+  const created = create(p.f, p.d, "Walk-in");
+  pendingAntrian = null;
+  if (created) {
+    doneAntrian = created;
+    render();
+  }
+}
+
+function submitWalkinClicked() {
+  const w = getFormObj("wi");
+  if (!w.nama || !w.nama.value.trim()) return showAlert("Nama konsumen wajib diisi.", "Data Belum Lengkap", "⚠️");
+  if (!w.plat || !w.plat.value.trim()) return showAlert("Plat nomor wajib diisi.", "Data Belum Lengkap", "⚠️");
+  if (!w.model || !w.model.value.trim()) return showAlert("Tipe motor wajib diisi.", "Data Belum Lengkap", "⚠️");
+
+  // Tombol + Walk-in SA tidak dibatasi slot antrian (bebas kuota / bypass limit)
+  create(w, saDate, "Walk-in", true);
+  const wiEl = $("#wi");
+  if (wiEl) {
+    wiEl.querySelectorAll("input, textarea").forEach(i => i.value = "");
+    wiEl.classList.add("hide");
+  }
+  render();
+}
+
+function closeConfirmBookingModal() {
+  const modal = $("#modalConfirmBooking");
+  if (modal) modal.classList.add("hide");
+  pendingBooking = null;
+}
+
+function executeConfirmedBooking() {
+  if (!pendingBooking) return;
+  const p = pendingBooking;
+  const modal = $("#modalConfirmBooking");
+  if (modal) modal.classList.add("hide");
+
+  const created = create(p.f, p.d, "Booking");
+  pendingBooking = null;
+  if (created) {
+    done = created;
+    render();
+  }
+}
+
+/* ===== TAMPILAN VIEW ===== */
+
+/* 0. VIEW PORTAL / MENU UTAMA (PILIHAN 2 MENU: ANTRIAN & BOOKING) */
+function vHome() {
+  const tToday = today();
+  const tBesok = tomorrow();
+  const stallsCount = siteStallsOf(tToday);
+  const antrianQuota = siteWalkinQuotaOf(tToday);
+  const usedAntrian = siteAntrianUsed(tToday);
+  const sisaAntrian = Math.max(0, antrianQuota - usedAntrian);
+
+  const bQuota = siteBookingQuotaOf(tBesok);
+  const bUsed = siteUsed(tBesok);
+  const sisaBooking = Math.max(0, bQuota - bUsed);
+
+  return `
+    <div style="text-align:center;margin:12px 0 24px">
+      <div style="display:inline-block;padding:6px 14px;background:var(--card);border:1px solid var(--line);border-radius:20px;font-size:13px;font-weight:600;color:var(--mut);margin-bottom:12px">
+        📍 Cabang Aktif: <b style="color:var(--ink)">BDG</b>
+      </div>
+      <h2 style="font-size:26px;margin:0 0 8px;font-weight:700">Layanan Servis Motor Listrik</h2>
+      <p class="note" style="font-size:14px;max-width:560px;margin:0 auto">
+        Selamat datang! Silakan pilih jenis layanan servis yang Anda butuhkan di bawah ini:
+      </p>
+    </div>
+
+    <!-- 2 PILIHAN MENU UTAMA: ANTRIAN & BOOKING -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(290px, 1fr));gap:20px;margin-bottom:28px">
+      
+      <!-- MENU 1: AMBIL ANTRIAN HARI INI -->
+      <div class="card" style="border:2px solid var(--line);border-radius:8px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:transform 0.15s, border-color 0.15s" onclick="switchView('antrian')" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--line)'">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <span style="font-size:36px;line-height:1">🎫</span>
+            <span class="tag s-Hadir" style="font-size:12px;padding:4px 10px;font-weight:700">Servis Hari Ini</span>
+          </div>
+          <h3 style="font:700 24px 'Barlow Condensed';text-transform:uppercase;margin:0 0 6px;color:var(--ink)">1. Ambil Antrian (Walk-in)</h3>
+          <div style="font-size:13px;color:var(--red);font-weight:700;margin-bottom:12px">⏰ Jam Operasional: 08:30 - 11:30 WIB</div>
+          <p style="font-size:13.5px;color:var(--mut);line-height:1.55;margin:0 0 16px">
+            Untuk Anda yang langsung datang ke bengkel hari ini. Dapatkan nomor antrian dan pantau estimasi waktu tunggu secara langsung.
+          </p>
+          <div style="background:var(--bg);border:1px solid var(--line);padding:10px 14px;border-radius:6px;font-size:13px;margin-bottom:20px">
+            <span>Kapasitas Hari Ini: <b>${sisaAntrian > 0 ? `${sisaAntrian} dari ${antrianQuota} slot tersedia` : 'Penuh (Slot Habis)'}</b> (${stallsCount} Stall)</span>
+          </div>
+        </div>
+        <button type="button" class="btn" style="width:100%;padding:12px;font-size:15px;background:var(--red);color:#fff;border-radius:6px" onclick="event.stopPropagation();switchView('antrian')">
+          Ambil Antrian Sekarang →
+        </button>
+      </div>
+
+      <!-- MENU 2: BOOKING SERVICE (TERJADWAL) -->
+      <div class="card" style="border:2px solid var(--line);border-radius:8px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:transform 0.15s, border-color 0.15s" onclick="switchView('book')" onmouseover="this.style.borderColor='var(--pri)'" onmouseout="this.style.borderColor='var(--line)'">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <span style="font-size:36px;line-height:1">📅</span>
+            <span class="tag s-Dikerjakan" style="font-size:12px;padding:4px 10px;font-weight:700">Mulai Besok (H-1)</span>
+          </div>
+          <h3 style="font:700 24px 'Barlow Condensed';text-transform:uppercase;margin:0 0 6px;color:var(--ink)">2. Booking Jadwal Service</h3>
+          <div style="font-size:13px;color:var(--pri);font-weight:700;margin-bottom:12px">⏰ Jam Layanan: 12:30 - 15:30 WIB</div>
+          <p style="font-size:13.5px;color:var(--mut);line-height:1.55;margin:0 0 16px">
+            Rencanakan jadwal servis motor Anda mulai tanggal besok (${fmtD(tBesok)} ke atas). Pilih jam kedatangan tanpa antri lama.
+          </p>
+          <div style="background:var(--bg);border:1px solid var(--line);padding:10px 14px;border-radius:6px;font-size:13px;margin-bottom:20px">
+            <span>Slot Besok: <b>${sisaBooking > 0 ? `${sisaBooking} dari ${bQuota} slot tersedia` : 'Penuh'}</b> (Pilihan: 12:30, 13:30, 14:30)</span>
+          </div>
+        </div>
+        <button type="button" class="btn" style="width:100%;padding:12px;font-size:15px;background:var(--pri);color:#fff;border-radius:6px" onclick="event.stopPropagation();switchView('book')">
+          Booking Service Sekarang →
+        </button>
+      </div>
+
+    </div>
+
+    <!-- PANDUAN RINGKAS -->
+    <div class="card" style="background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:16px 20px">
+      <div style="font-weight:700;margin-bottom:8px;color:var(--ink);font-size:14px">💡 Ketentuan Layanan:</div>
+      <ul style="margin:0;padding-left:20px;font-size:13px;color:var(--mut);line-height:1.75">
+        <li><b>Ambil Antrian</b>: Khusus untuk servis hari ini (${fmtD(tToday)}) pukul 08:30 - 11:30 WIB. Jika slot harian telah penuh, pendaftaran otomatis ditutup.</li>
+        <li><b>Booking Service</b>: Wajib dilakukan minimal H-1 (mulai besok ${fmtD(tBesok)}) untuk servis siang hari pukul 12:30 - 15:30 WIB.</li>
+        <li>Setelah pendaftaran berhasil, simpan nomor antrian dan tunjukkan kepada Service Advisor saat tiba di bengkel.</li>
+      </ul>
+    </div>
+  `;
+}
+
+/* 1. VIEW AMBIL ANTRIAN (HANYA JAM 08:30 - 11:30) */
+function vAntrian() {
+  if (doneAntrian) {
+    const est = calcAntrianWaitEstimate(doneAntrian);
+    return `
+      <div class="card big">
+        <div class="note">Ambil Antrian Berhasil &middot; Cabang <b>${esc(doneAntrian.site || activeSite)}</b></div>
+        <div class="no">${doneAntrian.no_antrian}</div>
+        <p><b>${esc(doneAntrian.nama)}</b> &middot; ${esc(doneAntrian.plat)} (${esc(doneAntrian.model)})<br>
+        Tanggal Servis: <b>${fmtD(doneAntrian.tanggal)}</b> &middot; Layanan: ${esc(doneAntrian.layanan)}</p>
+
+        <!-- KOTAK ESTIMASI WAKTU TUNGGU & CREATE SCL -->
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;margin:16px 0;text-align:left">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <div><span class="note">Waktu Ambil Antrian:</span><br><b style="font-size:16px;color:var(--red)">${doneAntrian.jam} WIB</b></div>
+            <div><span class="note">Lokasi stall:</span><br><b>${doneAntrian.stall || "Stall (Dijadwalkan)"}</b></div>
+          </div>
+          <div style="padding:8px 10px;background:rgba(213,16,28,0.06);border-left:3px solid var(--red);border-radius:4px;margin-bottom:8px">
+            <div style="font-weight:700;color:var(--red);font-size:15px">
+              ⏱️ Estimasi Waktu Tunggu: ${est.waitMinutes <= 0 ? "0 Menit (Langsung Masuk Create SCL)" : `~${est.waitMinutes} Menit`}
+            </div>
+            <div style="font-size:12.5px;color:var(--mut);margin-top:2px">
+              ${est.waitMinutes <= 0 
+                ? "Stall siap menerima kendaraan Anda. Silakan langsung menuju Service Advisor." 
+                : `Terdapat ${est.waitingAheadCount} antrian di depan Anda. Silakan menunggu di ruang tunggu.`}
+            </div>
+          </div>
+          <div style="font-size:13px;line-height:1.6">
+            <span>Estimasi Create Case: <b>~${est.estStart} WIB</b></span><br>
+            <span>Estimasi Invoice: <b>~${est.estDone} WIB (Durasi 1 jam)</b></span>
+          </div>
+        </div>
+
+        <p class="note">Tunjukkan nomor antrian ini ke Service Advisor saat tiba di bengkel.<br>Nomor antrian akan dipanggil sesuai urutan kedatangan.</p>
+        <button type="button" class="btn" onclick="doneAntrian=null;render()">Ambil Antrian Lain</button>
+      </div>`;
+  }
+  const t = today();
+  return `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <h2>Form Ambil Antrian Service</h2>
+        <div class="tag s-Hadir" style="cursor:default;" title="Cabang Bengkel: BDG (Paten)">Cabang: <b id="antrianSiteTag">BDG</b></div>
+      </div>
+      <div id="fa">
+        <div class="g2">
+          <label>Tanggal Service
+            <input type="date" name="tgl" min="${t}" value="${t}" required onchange="antrianSlotInfo(this.value)">
+          </label>
+          <label>Kapasitas & Sisa Slot Antrian
+            <input id="slotAntrian" readonly style="font-weight:700">
+          </label>
+          <label>Nama Pemilik
+            <input name="nama" required placeholder="Contoh: Budi Santoso">
+          </label>
+          <label>No. WhatsApp (Aktif)
+            <input name="hp" type="tel" required placeholder="08xxxxxxxxxx">
+          </label>
+          <label>Plat Nomor
+            <input name="plat" required placeholder="Contoh: B 1234 XYZ" style="text-transform:uppercase">
+          </label>
+          <label>Tipe Motor Listrik
+            <input name="model" required placeholder="Contoh: Gesits Raya, Alva One, Polytron FOX R">
+          </label>
+          <label style="grid-column:1/-1">Jenis Layanan
+            <select name="layanan">${LAYANAN.map(l => `<option>${l}</option>`).join("")}</select>
+          </label>
+          <label style="grid-column:1/-1">Keluhan / Catatan Tambahan
+            <textarea name="keluhan" rows="2" placeholder="Tuliskan kendala motor Anda jika ada"></textarea>
+          </label>
+        </div>
+        <div id="antrianAlertBox" style="display:none;margin-top:12px;padding:12px 14px;background:#FCE8E6;border-left:4px solid var(--red);border-radius:4px;color:#C5221F;font-weight:600">
+          ⚠️ Kuota antrian hari ini sudah penuh. Semua slot antrian terisi.
+        </div>
+        <button type="button" class="btn" id="ba" onclick="submitAntrianClicked()" style="margin-top:12px">Ambil Antrian Sekarang</button>
+      </div>
+    </div>`;
+}
+
+function antrianSlotInfo(d) {
+  const stallsCount = siteStallsOf(d, activeSite);
+  const antrianQuota = siteWalkinQuotaOf(d, activeSite);
+  const used = siteAntrianUsed(d, activeSite);
+  const sisa = Math.max(0, antrianQuota - used);
+
+  const slotInput = $("#slotAntrian");
+  const ba = $("#ba");
+  const alertBox = $("#antrianAlertBox");
+
+  if (slotInput) {
+    if (sisa <= 0) {
+      slotInput.value = `Penuh! Semua ${antrianQuota} slot antrian terisi (${stallsCount} Stall)`;
+      slotInput.style.color = "var(--red)";
+      slotInput.style.borderColor = "var(--red)";
+    } else {
+      slotInput.value = `${sisa} dari ${antrianQuota} slot antrian tersedia (${stallsCount} Stall)`;
+      slotInput.style.color = "var(--ok)";
+      slotInput.style.borderColor = "var(--line)";
+    }
+  }
+
+  if (alertBox) {
+    alertBox.style.display = sisa <= 0 ? "block" : "none";
+  }
+
+  if (ba) {
+    if (sisa <= 0) {
+      ba.disabled = true;
+      ba.textContent = "Antrian Penuh (Slot Habis)";
+      ba.classList.add("sec");
+      ba.style.background = "#888";
+      ba.style.cursor = "not-allowed";
+      ba.style.opacity = "0.65";
+    } else {
+      ba.disabled = false;
+      ba.textContent = "Ambil Antrian Sekarang";
+      ba.classList.remove("sec");
+      ba.style.background = "";
+      ba.style.cursor = "pointer";
+      ba.style.opacity = "1";
+    }
+  }
+}
+
+/* 2. VIEW BOOKING (HANYA JAM 12:30 - 15:30) */
+function vBook() {
+  if (done) {
+    return `
+      <div class="card big">
+        <div class="note">Booking Berhasil &middot; Cabang <b>${esc(done.site || activeSite)}</b></div>
+        <div class="no">${done.no_antrian}</div>
+        <p><b>${esc(done.nama)}</b> &middot; ${esc(done.plat)} (${esc(done.model)})<br>
+        Tanggal Servis: <b>${fmtD(done.tanggal)}</b> &middot; Layanan: ${esc(done.layanan)}</p>
+
+        <!-- KOTAK JADWAL BOOKING (TANPA ESTIMASI WAKTU TUNGGU) -->
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;margin:16px 0;text-align:left">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <div><span class="note">Jadwal Booking:</span><br><b style="font-size:16px;color:var(--red)">${done.jam} - ${addMinutes(done.jam, 60)} WIB</b></div>
+            <div><span class="note">Lokasi stall:</span><br><b>${done.stall || "Stall (Dijadwalkan)"}</b></div>
+          </div>
+          <div style="margin-top:6px;padding:8px 10px;background:rgba(28,138,76,0.08);border-left:3px solid var(--ok);border-radius:4px">
+            <div style="color:var(--ok);font-weight:700">✓ Jadwal Booking Terkonfirmasi</div>
+            <div style="font-size:12.5px;color:var(--mut);margin-top:2px">Harap hadir di bengkel 10-15 menit sebelum jam ${done.jam} WIB untuk konfirmasi kedatangan ke Service Advisor.</div>
+          </div>
+        </div>
+
+        <p class="note">Tunjukkan nomor antrian ini ke Service Advisor saat tiba di bengkel.<br>Toleransi keterlambatan 15 menit dari jam booking.</p>
+        <button type="button" class="btn" onclick="done=null;render()">Buat Booking Lain</button>
+      </div>`;
+  }
+  const t = tomorrow();
+  return `
+    <div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <button type="button" class="btn sm" style="border-radius:4px;background:var(--red)" onclick="switchView('antrian')">Beralih ke Ambil Antrian →</button>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <h2>Form Booking Service</h2>
+        <div class="tag s-Hadir" style="cursor:default;" title="Cabang Bengkel: BDG (Paten)">Cabang: <b id="bookSiteTag">BDG</b></div>
+      </div>
+      <div style="font-size:13px;color:var(--mut);margin-bottom:14px;padding:8px 12px;background:var(--bg);border-left:3px solid var(--pri);border-radius:4px">
+        ℹ️ <b>Ketentuan Booking:</b> Booking service hanya dapat dilakukan mulai <b>H-1 (besok ke atas)</b>. Untuk servis pada hari ini (${fmtD(today())}), silakan langsung gunakan menu <b>Ambil Antrian</b>.
+      </div>
+      <div id="fb">
+        <div class="g2">
+          <label>Tanggal Service
+            <input type="date" name="tgl" min="${t}" value="${t}" required onchange="slotInfo(this.value)">
+          </label>
+          <label>Kapasitas & Sisa Slot Booking
+            <input id="slot" readonly style="font-weight:700">
+          </label>
+          <label>Pilihan Jam Booking (Hanya 12:30 - 15:30)
+            <select name="jam_slot" id="jamSlot" required>
+              <option value="">Memuat jam...</option>
+            </select>
+          </label>
+          <label>Jenis Layanan
+            <select name="layanan">${LAYANAN.map(l => `<option>${l}</option>`).join("")}</select>
+          </label>
+          <label>Nama Pemilik
+            <input name="nama" required placeholder="Contoh: Budi Santoso">
+          </label>
+          <label>No. WhatsApp (Aktif)
+            <input name="hp" type="tel" required placeholder="08xxxxxxxxxx">
+          </label>
+          <label>Plat Nomor
+            <input name="plat" required placeholder="Contoh: B 1234 XYZ" style="text-transform:uppercase">
+          </label>
+          <label>Tipe Motor Listrik
+            <input name="model" required placeholder="Contoh: Gesits Raya, Alva One, Polytron FOX R">
+          </label>
+          <label style="grid-column:1/-1">Keluhan / Catatan Tambahan
+            <textarea name="keluhan" rows="2" placeholder="Tuliskan kendala motor Anda jika ada"></textarea>
+          </label>
+        </div>
+        <button type="button" class="btn" id="bb" onclick="submitBookingClicked()" style="margin-top:10px">Booking Sekarang</button>
+      </div>
+    </div>`;
+}
+
+function slotInfo(d) {
+  const stallsCount = siteStallsOf(d, activeSite);
+  const bookingQuota = siteBookingQuotaOf(d, activeSite);
+  const used = siteUsed(d, activeSite);
+  const sisa = bookingQuota - used;
+  const isTodayOrPast = (d <= today());
+
+  const slotInput = $("#slot");
+  const jamSel = $("#jamSlot");
+  const bb = $("#bb");
+
+  if (isTodayOrPast) {
+    if (slotInput) {
+      slotInput.value = "Booking hanya mulai besok (H-1). Untuk hari ini gunakan 'Ambil Antrian'.";
+      slotInput.style.color = "var(--red)";
+      slotInput.style.borderColor = "var(--red)";
+    }
+    if (jamSel) {
+      jamSel.innerHTML = `<option value="" disabled selected>Booking tidak tersedia untuk tanggal hari ini</option>`;
+    }
+    if (bb) {
+      bb.disabled = true;
+      bb.textContent = "Booking Hanya Bisa Mulai Besok";
+      bb.classList.add("sec");
+      bb.style.background = "#888";
+      bb.style.cursor = "not-allowed";
+      bb.style.opacity = "0.65";
+    }
+    return;
+  }
+
+  if (slotInput) {
+    if (sisa <= 0) {
+      slotInput.value = `Penuh! Semua ${bookingQuota} slot booking terisi (${stallsCount} Stall)`;
+      slotInput.style.color = "var(--red)";
+      slotInput.style.borderColor = "var(--red)";
+    } else {
+      slotInput.value = `${sisa} dari ${bookingQuota} slot booking tersedia (${stallsCount} Stall)`;
+      slotInput.style.color = "var(--ok)";
+      slotInput.style.borderColor = "var(--line)";
+    }
+  }
+
+  if (jamSel) {
+    let anyAvailable = false;
+
+    const optionsHtml = BOOKING_SLOTS.map(sl => {
+      const avail = getAvailableStallsForSlot(d, sl, activeSite);
+      if (avail.length === 0) {
+        return `<option value="${sl}" disabled style="color:#999">${sl} - ${addMinutes(sl, 60)} WIB (Penuh - Semua stall terisi)</option>`;
+      }
+      anyAvailable = true;
+      return `<option value="${sl}">${sl} - ${addMinutes(sl, 60)} WIB (${avail.length} stall tersedia)</option>`;
+    }).join("");
+
+    jamSel.innerHTML = optionsHtml;
+    
+    const firstEnabled = jamSel.querySelector("option:not([disabled])");
+    if (firstEnabled) firstEnabled.selected = true;
+
+    if (bb) {
+      bb.disabled = !anyAvailable;
+      if (!anyAvailable) {
+        bb.textContent = "Slot Booking Penuh";
+        bb.classList.add("sec");
+        bb.style.background = "#888";
+        bb.style.cursor = "not-allowed";
+        bb.style.opacity = "0.65";
+      } else {
+        bb.textContent = "Booking Sekarang";
+        bb.classList.remove("sec");
+        bb.style.background = "";
+        bb.style.cursor = "pointer";
+        bb.style.opacity = "1";
+      }
+    }
+  }
+}
+
+/* 2. VIEW SERVICE ADVISOR (SA) */
+function vSA() {
+  if (!role.sa) return lock("sa");
+  const curSiteUpper = (activeSite || "").toUpperCase();
+  const L = recs.filter(r => (r.site || "").toUpperCase() === curSiteUpper && r.tanggal === saDate)
+               .sort((a, b) => a.no_antrian.localeCompare(b.no_antrian));
+  const stallList = getStallList(saDate, activeSite);
+  const activeUnits = L.filter(x => (x.status === "Dikerjakan" || x.status === "Create SCL"));
+
+  // Antrian reguler untuk tanggal ini (kecuali yang berstatus FBB)
+  const queueUnits = L.filter(r => r.status !== "FBB");
+
+  // Seluruh unit FBB di cabang ini yang belum di-Invoice
+  const fbbList = recs.filter(r => (r.site || "").toUpperCase() === curSiteUpper && r.status === "FBB")
+                      .sort((a, b) => (b.selesai || b.tanggal || "").localeCompare(a.selesai || a.tanggal || "") || a.no_antrian.localeCompare(b.no_antrian));
+
+  const b = (t, c, f, dis = false) => `<button type="button" class="btn sm ${c}" ${dis ? 'disabled style="opacity:0.6;cursor:not-allowed"' : ''} onclick="${f}">${t}</button> `;
+
+  return `
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div>
+        <h2 style="margin:0">Service Advisor &middot; Cabang <span style="color:var(--red)">${esc(activeSite)}</span></h2>
+        <span class="note">Kelola antrian dan unit siap ambil khusus cabang ini</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="tag s-Hadir" style="font-size:13px;padding:4px 10px;">Cabang: <b>BDG</b> (Paten)</span>
+      </div>
+    </div>
+
+    <!-- SUB-NAVIGASI MENU SA: ANTRIAN vs DAFTAR FBB -->
+    <div style="display:flex;gap:10px;margin-bottom:14px;border-bottom:2px solid var(--line);padding-bottom:10px">
+      <button type="button" class="btn ${saTab === 'antrian' ? '' : 'sec'}" onclick="saTab='antrian';render()" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;border-radius:6px">
+        <span>📋 Daftar Antrian & Pengerjaan</span>
+        <span class="tag" style="background:${saTab === 'antrian' ? 'rgba(255,255,255,0.3)' : 'var(--line)'};color:${saTab === 'antrian' ? '#fff' : 'var(--ink)'};font-size:12px">${queueUnits.length}</span>
+      </button>
+      <button type="button" class="btn ${saTab === 'fbb' ? 'warn' : 'sec'}" onclick="saTab='fbb';render()" style="${saTab === 'fbb' ? 'background:#D97706;color:#fff;' : ''};display:inline-flex;align-items:center;gap:8px;font-size:14px;border-radius:6px">
+        <span>⏳ Daftar FBB (Finish Belum Diambil)</span>
+        <span class="tag" style="background:${saTab === 'fbb' ? '#fff' : (fbbList.length > 0 ? '#FEF3C7' : 'var(--line)')};color:${saTab === 'fbb' ? '#D97706' : (fbbList.length > 0 ? '#92400E' : 'var(--ink)')};font-size:12px;font-weight:700">${fbbList.length} Unit</span>
+      </button>
+    </div>
+
+    ${saTab === "fbb" ? `
+      <!-- ================= TAMPILAN DAFTAR FBB ================= -->
+      <div class="card" style="margin-bottom:14px;background:#FFFDF7;border:1px solid #FDE68A">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+          <div>
+            <h3 style="margin:0 0 4px;font:700 20px 'Barlow Condensed';color:#92400E;display:flex;align-items:center;gap:8px">
+              <span>⏳ Daftar Unit FBB (Finish Belum Diambil) &middot; Cabang ${esc(activeSite)}</span>
+            </h3>
+            <span class="note" style="color:#78350F">Daftar motor yang pengerjaannya telah selesai di stall namun belum diambil oleh pemiliknya. Klik tombol <b>Invoice</b> saat konsumen datang mengambil motor kesayangannya.</span>
+          </div>
+          <div>
+            <span class="tag s-FBB" style="font-size:14px;padding:6px 12px;font-weight:700">Total FBB: ${fbbList.length} Unit</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card scroll">
+        <h2>Unit Menunggu Diambil Konsumen (${fbbList.length} Motor)</h2>
+        <table>
+          <tr>
+            <th>No</th>
+            <th>Konsumen & Motor</th>
+            <th>No. WhatsApp</th>
+            <th>Tgl Servis & Stall Asal</th>
+            <th>Layanan & Keluhan</th>
+            <th>Status</th>
+            <th>Waktu Selesai</th>
+            <th style="min-width:140px">Aksi</th>
+          </tr>
+          ${fbbList.map(r => `
+            <tr>
+              <td class="no">${r.no_antrian}</td>
+              <td>
+                <b>${esc(r.nama)}</b>
+                <br><span class="note" style="font-weight:700;letter-spacing:0.5px">${esc(r.plat)}</span> &middot; <span class="note">${esc(r.model)}</span>
+              </td>
+              <td>
+                ${r.hp ? `<span style="font-size:13px;font-weight:600;color:var(--ink)">${esc(r.hp)}</span>` : '<span class="note">-</span>'}
+              </td>
+              <td>
+                <b>${fmtD(r.tanggal)}</b>
+                ${r.stall ? `<br><span class="note" style="color:var(--ok);font-weight:600">Eks ${esc(r.stall)}</span>` : ""}
+              </td>
+              <td>
+                <b>${esc(r.layanan)}</b>
+                ${r.keluhan ? `<br><span class="note" style="color:#666">${esc(r.keluhan)}</span>` : ""}
+              </td>
+              <td>
+                <span class="tag s-FBB">FBB (Belum Diambil)</span>
+              </td>
+              <td>
+                <div style="font-weight:700;color:var(--ink)">${r.selesai ? hm(r.selesai) + ' WIB' : '-'}</div>
+                <span class="note">${r.selesai ? dur(mins(r.selesai)) + ' lalu' : ''}</span>
+              </td>
+              <td>
+                ${b("Invoice", "ok", `executeInvoiceFromFBB('${r.id}')`)}
+                ${b("Batal FBB", "sec", `revertFBBToStall('${r.id}')`)}
+              </td>
+            </tr>
+          `).join("") || `<tr><td colspan="8" class="note" style="text-align:center;padding:24px">Tidak ada unit yang berstatus FBB (semua motor yang selesai telah diambil/di-Invoice).</td></tr>`}
+        </table>
+      </div>
+    ` : `
+      <!-- ================= TAMPILAN ANTRIAN & PENGERJAAN ================= -->
+      <div class="card">
+        <div class="row">
+          <label>Tanggal Antrian
+            <input type="date" value="${saDate}" onchange="saDate=this.value;render()">
+          </label>
+          <span class="note" style="padding-bottom:10px">Antrian: <b>${siteAntrianUsed(saDate)}/${siteWalkinQuotaOf(saDate)}</b> &middot; Booking: <b>${siteUsed(saDate)}/${siteQuotaOf(saDate)}</b> slot terisi</span>
+          <button type="button" class="btn sec" onclick="$('#wi').classList.toggle('hide')">+ Tambah Walk-in Langsung</button>
+        </div>
+
+        <!-- FORM WALK IN -->
+        <div id="wi" class="hide" style="margin-top:14px;border-top:1px dashed var(--line);padding-top:14px">
+          <h3 style="font:700 18px 'Barlow Condensed';margin:0 0 10px">Pendaftaran Antrian Langsung (Walk-in) &middot; Bebas Kuota / Tanpa Batas Slot</h3>
+          <div class="g2">
+            <label>Nama Konsumen<input name="nama" required></label>
+            <label>No. WhatsApp<input name="hp"></label>
+            <label>Plat Nomor<input name="plat" required style="text-transform:uppercase"></label>
+            <label>Tipe Motor<input name="model" required></label>
+            <label>Jenis Layanan<select name="layanan">${LAYANAN.map(l => `<option>${l}</option>`).join("")}</select></label>
+            <label>Keluhan<input name="keluhan"></label>
+          </div>
+          <button type="button" class="btn ok" onclick="submitWalkinClicked()" style="margin-top:10px">Daftarkan & Langsung Ambil Antrian</button>
+        </div>
+      </div>
+
+      <!-- BANNER NOTIFIKASI FBB JIKA ADA UNIT BELUM DIAMBIL -->
+      ${fbbList.length > 0 ? `
+        <div style="background:#FFFBEB;border:1px solid #FDE68A;border-left:4px solid #D97706;padding:10px 14px;border-radius:4px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div style="font-size:13.5px;color:#92400E">
+            <b>⏳ Terdapat ${fbbList.length} unit motor di Daftar FBB</b> (pengerjaan selesai, belum diambil konsumen).
+          </div>
+          <button type="button" class="btn sm warn" onclick="saTab='fbb';render()">Lihat Daftar FBB (${fbbList.length}) &rarr;</button>
+        </div>
+      ` : ""}
+
+      <!-- MONITOR STATUS STALL HARI INI -->
+      <div class="card" style="margin-bottom:14px;padding:12px 16px">
+        <div style="font-weight:700;font-size:14px;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span>🔧 Status Keterisian Stall (${esc(activeSite)} &middot; ${fmtD(saDate)}):</span>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          ${stallList.map(st => {
+            const busy = activeUnits.find(u => u.stall === st);
+            if (busy) {
+              return `
+                <div style="padding:8px 14px;background:#FCE8E6;border:1px solid #F5C6CB;border-left:4px solid #D93025;border-radius:4px;font-size:13px;display:flex;align-items:center;gap:10px">
+                  <span style="display:inline-block;width:10px;height:10px;background:#D93025;border-radius:50%"></span>
+                  <div>
+                    <b style="color:#C5221F">${st}: Terisi (Create SCL)</b><br>
+                    <span class="note" style="color:#666">${busy.no_antrian} &middot; ${esc(busy.nama)} (${esc(busy.plat)})${busy.hp ? ` &middot; ${esc(busy.hp)}` : ""}</span>
+                  </div>
+                </div>`;
+            } else {
+              return `
+                <div style="padding:8px 14px;background:#E6F4EA;border:1px solid #C3E6CB;border-left:4px solid #188038;border-radius:4px;font-size:13px;display:flex;align-items:center;gap:10px">
+                  <span style="display:inline-block;width:10px;height:10px;background:#188038;border-radius:50%"></span>
+                  <div>
+                    <b style="color:#137333">${st}: Kosong</b><br>
+                    <span class="note" style="color:#666">Siap untuk Create Case</span>
+                  </div>
+                </div>`;
+            }
+          }).join("")}
+        </div>
+      </div>
+
+      <div class="card scroll">
+        <h2>Daftar Antrian (${esc(activeSite)}) &middot; ${fmtD(saDate)}</h2>
+        <table>
+          <tr>
+            <th>No</th>
+            <th>Konsumen & Motor</th>
+            <th style="white-space:nowrap">Jam Booking / Masuk</th>
+            <th>Layanan</th>
+            <th>Status</th>
+            <th>Tunggu</th>
+            <th>Aksi</th>
+          </tr>
+          ${queueUnits.map(r => {
+            const jamDisplay = r.sumber === "Booking"
+              ? `<div style="font-weight:700;color:var(--pri)">${r.jam ? r.jam + " WIB" : "-"}</div><span class="note" style="color:var(--pri);font-weight:600">Booking</span>`
+              : `<div style="font-weight:700;color:var(--ink)">${r.jam || hm(r.checkin) || hm(r.dibuat)} WIB</div><span class="note" style="color:var(--ok);font-weight:600">Masuk Antrian</span>`;
+            return `
+            <tr>
+              <td class="no">${r.no_antrian}</td>
+              <td>
+                <b>${esc(r.nama)}</b>
+                ${r.hp ? `<br><span style="font-size:12.5px;font-weight:600;color:var(--ink)">${esc(r.hp)}</span>` : ""}
+                <br><span class="note">${esc(r.plat)} &middot; ${esc(r.model)}</span>
+              </td>
+              <td style="white-space:nowrap">${jamDisplay}</td>
+              <td>${esc(r.layanan)}</td>
+              <td><span class="tag ${statusClass(r.status)}">${statusLabel(r.status)}</span>${r.stall ? `<br><span class="note"><b>${r.stall}</b></span>` : ""}</td>
+              <td>${r.sumber === "Booking" ? '<span class="note" style="color:#888">- (Booking)</span>' : (r.status === "Batal" ? "-" : lv(r.checkin, r.mulai))}</td>
+              <td>${acts(r)}</td>
+            </tr>
+            `;
+          }).join("") || `<tr><td colspan="7" class="note">Belum ada antrian pada tanggal ini di ${esc(activeSite)}.</td></tr>`}
+        </table>
+      </div>
+    `}
+  `;
+}
+
+
+function acts(r) {
+  const b = (t, c, f, dis = false) => `<button type="button" class="btn sm ${c}" ${dis ? 'disabled style="opacity:0.6;cursor:not-allowed"' : ''} onclick="${f}">${t}</button> `;
+  const stallList = getStallList(r.tanggal || today(), r.site || activeSite);
+  if (r.status === "Booking") {
+    return b("Ambil Antrian", "", `setStatus('${r.id}','Hadir')`) + b("Hangus", "sec", `setStatus('${r.id}','Batal')`);
+  }
+  if (r.status === "Hadir" || r.status === "Ambil Antrian") {
+    // Cari stall mana saja yang SEDANG DIKERJAKAN (belum di-Invoice) di cabang dan tanggal yang sama
+    const activeUnits = recs.filter(x => 
+      x.id !== r.id &&
+      (x.site || "").toUpperCase() === (r.site || activeSite || "").toUpperCase() &&
+      x.tanggal === (r.tanggal || saDate) &&
+      (x.status === "Dikerjakan" || x.status === "Create SCL")
+    );
+    const busyStalls = {};
+    activeUnits.forEach(x => { if (x.stall) busyStalls[x.stall] = x; });
+
+    const availableStalls = stallList.filter(s => !busyStalls[s]);
+    const allBusy = availableStalls.length === 0;
+
+    // Default stall yang dipilih: stall bawaan jika masih kosong, atau stall kosong pertama
+    let defaultStall = (!busyStalls[r.stall] && stallList.includes(r.stall)) ? r.stall : (availableStalls[0] || "");
+
+    const optionsHtml = stallList.map(s => {
+      const busy = busyStalls[s];
+      if (busy) {
+        return `<option value="${s}" disabled style="color:#999">${s} (Penuh - ${busy.no_antrian})</option>`;
+      }
+      return `<option value="${s}" ${s === defaultStall ? "selected" : ""}>${s} (Tersedia)</option>`;
+    }).join("");
+
+    if (allBusy) {
+      return `<select id="st${r.id}" disabled style="width:auto;display:inline-block;margin:0 4px 0 0;padding:4px 6px;color:#999;background:#f5f5f5">
+                <option value="" disabled selected>Semua Stall Penuh</option>
+              </select>` +
+             b("Create Case", "bl", `showAlert('Semua stall saat ini sedang dalam pengerjaan dan belum di-Invoice. Selesaikan pengerjaan (Invoice) di stall terlebih dahulu sebelum memulai unit berikutnya.', 'Semua Stall Penuh', '🚫')`, true) +
+             b("Batal", "sec", `setStatus('${r.id}','Batal')`);
+    }
+
+    return `<select id="st${r.id}" style="width:auto;display:inline-block;margin:0 4px 0 0;padding:4px 6px;font-weight:600">
+              ${optionsHtml}
+            </select>` +
+           b("Create Case", "bl", `executeCreateCase('${r.id}')`) +
+           b("Batal", "sec", `setStatus('${r.id}','Batal')`);
+  }
+  if (r.status === "Dikerjakan" || r.status === "Create SCL") {
+    return b("Invoice", "ok", `setStatus('${r.id}','Selesai')`) +
+           b("FBB", "warn", `setFBB('${r.id}')`);
+  }
+  if (r.status === "FBB") {
+    return b("Invoice", "ok", `executeInvoiceFromFBB('${r.id}')`) +
+           b("Batal FBB", "sec", `revertFBBToStall('${r.id}')`);
+  }
+  return "-";
+}
+
+function executeCreateCase(id) {
+  const sel = $(`#st${id}`);
+  const sVal = sel ? sel.value : "";
+  if (!sVal) {
+    return showAlert("Pilih stall yang tersedia terlebih dahulu.", "Pilih Stall", "⚠️");
+  }
+  setStatus(id, "Dikerjakan", sVal);
+}
+
+function setFBB(id) {
+  const r = recs.find(x => x.id === id);
+  if (!r) return;
+  setStatus(id, "FBB");
+  showAlert(
+    `Unit antrian ${r.no_antrian} (${r.nama} - ${r.plat}) telah dipindahkan ke "Daftar FBB (Finish Belum Diambil)".\n\nStall telah kosong dan siap melayani antrian berikutnya. Anda dapat melakukan Invoice kapan saja pada tab Daftar FBB saat konsumen datang mengambil motor.`,
+    "Masuk Daftar FBB",
+    "⏳"
+  );
+}
+
+function executeInvoiceFromFBB(id) {
+  const r = recs.find(x => x.id === id);
+  if (!r) return;
+  setStatus(id, "Selesai");
+  showAlert(
+    `Unit antrian ${r.no_antrian} (${r.nama} - ${r.plat}) telah resmi di-Invoice dan motor telah diambil oleh konsumen. Terima kasih!`,
+    "Invoice Berhasil",
+    "✅"
+  );
+}
+
+function revertFBBToStall(id) {
+  const r = recs.find(x => x.id === id);
+  if (!r) return;
+  const stallList = getStallList(r.tanggal || today(), r.site || activeSite);
+  const activeUnits = recs.filter(x => 
+    x.id !== id &&
+    (x.site || "").toUpperCase() === (r.site || activeSite || "").toUpperCase() &&
+    x.tanggal === (r.tanggal || saDate) &&
+    (x.status === "Dikerjakan" || x.status === "Create SCL")
+  );
+  const busyStalls = new Set(activeUnits.map(u => u.stall).filter(Boolean));
+  let targetStall = (!busyStalls.has(r.stall) && stallList.includes(r.stall)) ? r.stall : stallList.find(s => !busyStalls.has(s));
+
+  if (!targetStall) {
+    return showAlert("Tidak dapat mengembalikan ke pengerjaan karena semua stall saat ini sedang penuh!", "Stall Penuh", "🚫");
+  }
+  setStatus(id, "Dikerjakan", targetStall);
+  showAlert(`Unit ${r.no_antrian} dikembalikan ke status pengerjaan di ${targetStall}.`, "Dikembalikan ke Stall", "ℹ️");
+}
+
+/* 3. VIEW ADMIN DASHBOARD */
+function vAdm() {
+  if (!role.adm) return lock("adm");
+  const L = recs.filter(r => (r.site || "").toUpperCase() === (activeSite || "").toUpperCase() && r.tanggal === admDate)
+               .sort((a, b) => a.no_antrian.localeCompare(b.no_antrian));
+  const av = a => a.length ? Math.round(a.reduce((x, y) => x + y, 0) / a.length) : null;
+  // HANYA hitung durasi pengerjaan untuk antrian (Walk-in), yang booking tidak usah dihitung
+  const antrianOnly = L.filter(r => r.sumber !== "Booking");
+  const tg = antrianOnly.filter(r => r.mulai).map(r => mins(r.checkin, r.mulai));
+  const sv_ = antrianOnly.filter(r => r.selesai).map(r => mins(r.mulai, r.selesai));
+  const tt = antrianOnly.filter(r => r.selesai).map(r => mins(r.checkin, r.selesai));
+  const c = s => L.filter(r => r.status === s).length;
+  const days = [...Array(14)].map((_, i) => {
+    const d = new Date(); d.setDate(d.getDate() + i);
+    return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+  });
+
+  return `
+    <div class="card row">
+      <label>Tanggal Dashboard
+        <input type="date" value="${admDate}" onchange="admDate=this.value;render()">
+      </label>
+      <div style="flex:2;text-align:right">
+        <span class="tag s-Hadir">Cabang Aktif: <b>${esc(activeSite)}</b></span>
+      </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpis">
+      <div class="kpi"><b>${L.filter(r => r.status !== "Batal").length}</b><span>Total Antrian</span></div>
+      <div class="kpi hot"><b>${c("Hadir") + c("Ambil Antrian")}</b><span>Menunggu</span></div>
+      <div class="kpi"><b>${c("Dikerjakan") + c("Create SCL")}</b><span>Create SCL</span></div>
+      <div class="kpi"><b>${c("Selesai") + c("Invoice")}</b><span>Invoice</span></div>
+      <div class="kpi"><b>${dur(av(tg))}</b><span>Rata-rata Tunggu<br><span style="font-size:10.5px;color:var(--mut)">(Khusus Antrian)</span></span></div>
+      <div class="kpi"><b>${dur(av(sv_))}</b><span>Rata-rata Create SCL<br><span style="font-size:10.5px;color:var(--mut)">(Khusus Antrian)</span></span></div>
+      <div class="kpi"><b>${dur(av(tt))}</b><span>Rata-rata Total<br><span style="font-size:10.5px;color:var(--mut)">(Khusus Antrian)</span></span></div>
+    </div>
+
+    <!-- DETAIL WAKTU -->
+    <div class="card scroll">
+      <h2>Audit Waktu Layanan (${esc(activeSite)})</h2>
+      <table>
+        <tr>
+          <th>No</th>
+          <th>Konsumen</th>
+          <th style="white-space:nowrap">Jam Booking / Masuk</th>
+          <th>Ambil Antrian</th>
+          <th>Create Case</th>
+          <th>Invoice</th>
+          <th>Tunggu</th>
+          <th>Create SCL</th>
+          <th>Total</th>
+          <th>Status</th>
+        </tr>
+        ${L.map(r => {
+          const jamDisplay = r.sumber === "Booking"
+            ? `<div style="font-weight:700;color:var(--pri)">${r.jam ? r.jam + " WIB" : "-"}</div><span class="note" style="color:var(--pri);font-weight:600">Booking</span>`
+            : `<div style="font-weight:700;color:var(--ink)">${r.jam || hm(r.checkin) || hm(r.dibuat)} WIB</div><span class="note" style="color:var(--ok);font-weight:600">Masuk Antrian</span>`;
+          return `
+          <tr>
+            <td class="no">${r.no_antrian}</td>
+            <td>
+              <b>${esc(r.nama)}</b>
+              ${r.hp ? `<br><span style="font-size:11.5px;font-weight:600;color:var(--ink)">${esc(r.hp)}</span>` : ""}
+              <br><span class="note">${esc(r.plat)}</span>
+            </td>
+            <td style="white-space:nowrap">${jamDisplay}</td>
+            <td>${hm(r.checkin)}</td><td>${hm(r.mulai)}</td><td>${hm(r.selesai)}</td>
+            <td>${r.sumber === "Booking" || r.status === "Batal" ? '<span class="note" style="color:#888">- (Booking)</span>' : lv(r.checkin, r.mulai)}</td>
+            <td>${r.sumber === "Booking" ? '<span class="note" style="color:#888">- (Booking)</span>' : lv(r.mulai, r.selesai)}</td>
+            <td>${r.sumber === "Booking" || r.status === "Batal" ? '<span class="note" style="color:#888">- (Booking)</span>' : lv(r.checkin, r.selesai)}</td>
+            <td><span class="tag ${statusClass(r.status)}">${statusLabel(r.status)}</span></td>
+          </tr>
+          `;
+        }).join("") || `<tr><td colspan="10" class="note">Belum ada data antrian.</td></tr>`}
+      </table>
+    </div>
+
+    <!-- DAFTAR CABANG AKTIF -->
+    <div class="card">
+      <h2>Daftar Cabang Aktif</h2>
+      <p class="note">Daftar cabang dan hak akses dikelola oleh server terpusat.</p>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        ${sites.map(s => `
+          <div class="tag" style="padding:6px 14px;background:#25292E;color:#fff;display:inline-flex;align-items:center;gap:6px;font-size:13px;border-radius:6px">
+            <b>${esc(s)}</b> ${s.toUpperCase() === (activeSite || "").toUpperCase() ? '<span style="color:#4ADE80">(Aktif)</span>' : ''}
+          </div>
+        `).join("") || '<span class="note">Memuat daftar cabang dari server...</span>'}
+      </div>
+    </div>
+
+    <!-- PENGATURAN KAPASITAS STALL & KUOTA -->
+    <div class="card">
+      <h2>Kapasitas Stall & Kuota Servis (${esc(activeSite)})</h2>
+      <p class="note">
+        Ketentuan Kapasitas: 1 Stall = 6 unit/hari (3 Booking jam 12:30-15:30 + 3 Walk-in).<br>
+        Durasi Create SCL: 1 jam per unit. Kapasitas bertambah 2x lipat jika memiliki 2 stall, dst.
+      </p>
+
+      <div class="row" style="margin-top:14px">
+        <label>Jumlah Stall Standar (Tempat Servis)
+          <input type="number" min="1" max="20" id="s0" value="${siteStallsOf(today())}">
+          <span class="note" style="display:block;margin-top:3px">Default: ${siteStallsOf(today())} Stall (${siteBookingQuotaOf(today())} Booking + ${siteWalkinQuotaOf(today())} Walk-in = ${siteTotalCapacityOf(today())} Unit)</span>
+        </label>
+        <label>Atur Tanggal Khusus
+          <input type="date" id="sd" min="${today()}" value="${admDate}">
+        </label>
+        <label>Jumlah Stall Tanggal Khusus
+          <input type="number" min="1" max="20" id="s1" placeholder="Kosongkan = standar">
+        </label>
+        <button type="button" class="btn" onclick="openConfirmStallsModal()">Simpan Pengaturan Stall</button>
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:14px;display:flex;gap:16px;flex-wrap:wrap">
+        <div><span class="note">Tanggal Terpilih:</span><br><b>${fmtD(admDate)}</b></div>
+        <div><span class="note">Jumlah Stall:</span><br><b>${siteStallsOf(admDate)} Stall</b></div>
+        <div><span class="note">Kuota Booking (12:30-15:30):</span><br><b style="color:var(--red)">${siteBookingQuotaOf(admDate)} Slot (3/stall)</b></div>
+        <div><span class="note">Kuota Walk-in / Antrian:</span><br><b>${siteWalkinQuotaOf(admDate)} Slot (3/stall)</b></div>
+        <div><span class="note">Total Kapasitas Harian:</span><br><b style="color:var(--ok)">${siteTotalCapacityOf(admDate)} Unit/hari</b></div>
+      </div>
+
+      <div class="days" style="margin-top:14px">
+        ${days.map(d => {
+          const stalls = siteStallsOf(d);
+          const bQuota = siteBookingQuotaOf(d);
+          const bUsed = siteUsed(d);
+          const wUsed = recs.filter(r => (r.site || '').toUpperCase() === activeSite.toUpperCase() && r.tanggal === d && r.sumber === "Walk-in" && r.status !== "Batal").length;
+          const hasCustom = (cfg.siteQuotas?.[activeSite.toUpperCase()]?.perDate?.[d] != null);
+          return `
+            <div class="day">
+              <b>${fmtD(d)}</b> ${hasCustom ? "*" : ""}<br>
+              <span class="note" style="font-weight:700">${stalls} Stall</span><br>
+              Booking: ${bUsed}/${bQuota}<br>
+              Walk-in: ${wUsed}/${stalls * 3}
+              <div class="bar"><i style="width:${bQuota ? Math.min(100, (bUsed / bQuota) * 100) : 100}%"></i></div>
+            </div>`;
+        }).join("")}
+      </div>
+      <p class="note">* Tanda bintang = jumlah stall khusus untuk tanggal tersebut</p>
+    </div>`;
+}
+
+/* ===== LOGIKA PENGATURAN STALL ADMIN DENGAN KONFIRMASI ===== */
+let pendingStallsConfig = null;
+
+function openConfirmStallsModal() {
+  const s0El = $("#s0");
+  const s1El = $("#s1");
+  const sdEl = $("#sd");
+  if (!s0El) return;
+
+  const sDefault = Math.max(1, parseInt(s0El.value, 10) || 1);
+  const sSpecial = s1El ? s1El.value.trim() : "";
+  const d = sdEl ? sdEl.value : "";
+
+  pendingStallsConfig = { sDefault, sSpecial, d, site: activeSite };
+
+  const bodyEl = $("#confirmStallsBody");
+  if (bodyEl) {
+    let specialInfo = "";
+    if (d) {
+      if (sSpecial === "") {
+        specialInfo = `<tr><td style="color:var(--muted);padding:3px 0">Tanggal Khusus:</td><td>${fmtD(d)} (Direset ke standar)</td></tr>`;
+      } else {
+        const sVal = Math.max(1, parseInt(sSpecial, 10));
+        specialInfo = `<tr><td style="color:var(--muted);padding:3px 0">Tanggal Khusus (${fmtD(d)}):</td><td style="font-weight:700;color:var(--pri)">${sVal} Stall (${sVal * 3} Booking + ${sVal * 3} Walk-in = ${sVal * 6} Unit)</td></tr>`;
+      }
+    }
+
+    bodyEl.innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+        <tr><td style="color:var(--muted);width:42%;padding:3px 0">Cabang:</td><td style="font-weight:700">BDG</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Jumlah Stall Standar:</td><td style="font-weight:700;color:var(--pri)">${sDefault} Stall</td></tr>
+        <tr><td style="color:var(--muted);padding:3px 0">Kapasitas Harian:</td><td><b>${sDefault * 3}</b> Booking + <b>${sDefault * 3}</b> Walk-in<br><span style="font-size:12px;color:var(--ok);font-weight:700">Total ${sDefault * 6} Unit/Hari</span></td></tr>
+        ${specialInfo}
+      </table>
+    `;
+  }
+
+  const modal = $("#modalConfirmStalls");
+  if (modal) modal.classList.remove("hide");
+}
+
+function closeConfirmStallsModal() {
+  const modal = $("#modalConfirmStalls");
+  if (modal) modal.classList.add("hide");
+  pendingStallsConfig = null;
+}
+
+function executeConfirmedStalls() {
+  if (!pendingStallsConfig) return;
+  const p = pendingStallsConfig;
+  const modal = $("#modalConfirmStalls");
+  if (modal) modal.classList.add("hide");
+
+  if (!cfg.siteQuotas) cfg.siteQuotas = {};
+  const k = (p.site || activeSite).toUpperCase();
+  if (!cfg.siteQuotas[k]) cfg.siteQuotas[k] = { stalls: p.sDefault, quota: p.sDefault * 3, perDate: {} };
+  cfg.siteQuotas[k].stalls = p.sDefault;
+  cfg.siteQuotas[k].quota = p.sDefault * 3;
+
+  // Sinkronkan juga cache siteStalls lokal
+  siteStalls[k] = p.sDefault;
+  sv("sq_site_stalls", siteStalls);
+
+  if (p.d) {
+    if (p.sSpecial === "") {
+      if (cfg.siteQuotas[k].perDate) delete cfg.siteQuotas[k].perDate[p.d];
+    } else {
+      const sVal = Math.max(1, parseInt(p.sSpecial, 10));
+      if (!cfg.siteQuotas[k].perDate) cfg.siteQuotas[k].perDate = {};
+      cfg.siteQuotas[k].perDate[p.d] = sVal;
+    }
+  }
+
+  saveCfg();
+  pendingStallsConfig = null;
+  render();
+  showToast("Pengaturan kapasitas stall untuk cabang " + k + " berhasil disimpan!", 1000);
+}
+
+let toastTimer = null;
+function showToast(msg, duration = 1000) {
+  let el = $("#toast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "toast";
+    el.className = "toast hide";
+    document.body.appendChild(el);
+  }
+  el.innerHTML = '<span class="toast-icon">&#10003;</span><span class="toast-msg">' + esc(msg) + '</span>';
+  el.classList.remove("hide");
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    el.classList.add("hide");
+  }, duration);
+}
+
+function saveSiteStalls() {
+  openConfirmStallsModal();
+}
+
+function lock(k) {
+  return `
+    <div class="card" style="max-width:380px;margin:40px auto;text-align:center">
+      <h2>Akses Terbatas: ${k === "sa" ? "Service Advisor" : "Admin"}</h2>
+      <p class="note">Cabang: <b>${esc(activeSite)}</b></p>
+      <p class="note">Masukkan password cabang ${esc(activeSite)} untuk membuka halaman ini.</p>
+      <button class="btn" onclick="openLoginModal('${k}')">Masuk dengan Password</button>
+    </div>`;
+}
+
+/* ===== RENDER ENGINE ===== */
+function render() {
+  const a = document.activeElement;
+  if (a && /INPUT|TEXTAREA|SELECT/.test(a.tagName) && a.closest("#fb, #fa, #wi")) return;
+
+  updateSiteBadges();
+
+  const viewFn = { home: vHome, antrian: vAntrian, book: vBook, sa: vSA, adm: vAdm }[view] || vHome;
+  $("#app").innerHTML = viewFn();
+  document.querySelectorAll("nav button[data-v]").forEach(b => b.classList.toggle("on", b.dataset.v === view));
+
+  const isAuth = (role.sa && view === "sa") || (role.adm && view === "adm");
+  const btnLogout = $("#btnLogout");
+  if (btnLogout) btnLogout.classList.toggle("hide", !isAuth);
+  document.body.className = "view-" + view;
+
+  // Khusus di menu antrian, sembunyikan tombol sinkron dan menu utama
+  const isAntrian = (view === "antrian");
+  const syncBtn = document.querySelector(".btn-sync");
+  if (syncBtn) syncBtn.style.setProperty("display", isAntrian ? "none" : "", "important");
+
+  const btnNavHome = document.querySelector("#btnNavHome");
+  if (btnNavHome) btnNavHome.style.setProperty("display", isAntrian ? "none" : "", "important");
+
+  const fa = $("#fa");
+  if (fa) {
+    const fObj = getFormObj(fa);
+    if (fObj.tgl) antrianSlotInfo(fObj.tgl.value);
+    fa.querySelectorAll("input").forEach(inp => {
+      inp.onkeydown = e => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          submitAntrianClicked();
+        }
+      };
+    });
+  }
+
+  const fb = $("#fb");
+  if (fb) {
+    const fObj = getFormObj(fb);
+    if (fObj.tgl) slotInfo(fObj.tgl.value);
+    fb.querySelectorAll("input").forEach(inp => {
+      inp.onkeydown = e => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          submitBookingClicked();
+        }
+      };
+    });
+  }
+
+  const wi = $("#wi");
+  if (wi) {
+    wi.querySelectorAll("input").forEach(inp => {
+      inp.onkeydown = e => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          submitWalkinClicked();
+        }
+      };
+    });
+  }
+}
+
+/* Nav Buttons Click Listener */
+document.querySelectorAll("nav button[data-v]").forEach(b => {
+  b.onclick = () => {
+    const v = b.dataset.v;
+    if (v === "antrian" || v === "book") {
+      view = v;
+      done = null;
+      doneAntrian = null;
+      render();
+      return;
+    }
+    if (!role[v]) {
+      openLoginModal(v);
+    } else {
+      view = v;
+      done = null;
+      doneAntrian = null;
+      render();
+    }
+  };
+});
+
+/* Tick & Intervals */
+function tick() {
+  const n = new Date();
+  $("#clk").textContent = n.toLocaleDateString("id-ID", { day: "numeric", month: "short" }) + " " + n.toLocaleTimeString("id-ID");
+  document.querySelectorAll(".live[data-a]").forEach(e => e.textContent = dur(mins(e.dataset.a)));
+}
+
+// Inisialisasi awal
+updateSiteBadges();
+render();
+pull();
+tick();
+
+setInterval(tick, 1000);
+setInterval(() => { pull(); if (view !== "book" && view !== "antrian") render(); }, 120000); // Sinkronisasi tiap 2 menit
+</script>
+
+<footer style="text-align:center;margin:40px auto 20px;max-width:980px;padding:16px 12px;font-size:12px;color:var(--mut);border-top:1px solid var(--line)">
+  <div>Sistem Antrian &amp; Booking Service Motor Listrik &middot; Terhubung Realtime dengan Google Sheets</div>
+  <div style="margin-top:6px">
+    <a href="admin.html" style="color:inherit;text-decoration:none;opacity:0.6" title="Khusus Petugas Bengkel (Service Advisor & Admin)">🔒 Portal Khusus Petugas (SA / Admin)</a> &middot; <a href="Live_Monitoring.html" target="_blank" style="color:inherit;text-decoration:none;opacity:0.6" title="Buka Layar Live Monitoring TV">📺 Layar Live Monitoring</a>
+  </div>
+</footer>
+
+</body>
+</html>
